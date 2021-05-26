@@ -27,3 +27,9 @@ typedef uint64_t u64;
 
 #define msv MAYBE_STATIC void
 #define NS(fname) minipkpsig_##fname
+
+typedef struct {
+    void *p;
+    size_t bytes;
+} NS(chunkt);
+

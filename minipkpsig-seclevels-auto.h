@@ -1,0 +1,11 @@
+#define SECLEVEL_b80 0
+#define SECLEVEL_b96 1
+#define SECLEVEL_b112git 2
+#define SECLEVEL_b112 3
+#define SECLEVEL_c1 4
+#define SECLEVEL_c1a 5
+#define SECLEVEL_c2 6
+#define SECLEVEL_c3 7
+#define SECLEVEL_c4 8
+#define SECLEVEL_c5 9
+#define SECLEVEL_c6 10
