@@ -22,6 +22,9 @@ minipkpsig-paramsets-auto.o: minipkpsig-paramsets-auto.c minipkpsig-seclevels-au
 minipkpsig-seclevels-auto.c minipkpsig-seclevels-auto.h minipkpsig-paramsets-auto.c: declare_paramsets.py
 	python3 declare_paramsets.py
 
+minipkpsig-sym-shake256-xkcp.o: minipkpsig-sym-shake256-xkcp.c minipkpsig-symtypes.h minipkpsig-common.h
+	cc -g -c -o $@ $<
+
 
 gentestvecs-modvc.o: gentestvecs-modvc.c minipkpsig-modvc.h minipkpsig-common.h
 	cc -g -c -o $@ $<
