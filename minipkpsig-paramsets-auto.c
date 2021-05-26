@@ -7,7 +7,7 @@
 #define PPS_q1409n87m42kc4 3
 #define PPS_q1789n111m55kc5 4
 #define PPS_q1789n111m55kc6 5
-MAYBE_STATIC ppst pkp_paramsets[] = {
+MAYBE_STATIC const ppst pkp_paramsets[] = {
     {797,55,25,16,SECLEVEL_c1a},
     {977,61,28,16,SECLEVEL_c1},
     {977,61,28,16,SECLEVEL_c2},
@@ -16,7 +16,7 @@ MAYBE_STATIC ppst pkp_paramsets[] = {
     {1789,111,55,32,SECLEVEL_c6},
     {0,0,0,0,0}
 };
-MAYBE_STATIC pst paramsets[] = {
+MAYBE_STATIC const pst paramsets[] = {
     {PPS_q797n55m25kc1a,0,SECLEVEL_c1a,40,73},
     {PPS_q797n55m25kc1a,0,SECLEVEL_c1,34,57},
     {PPS_q797n55m25kc1a,0,SECLEVEL_b112,34,47},

@@ -68,7 +68,7 @@ seclevels_enumdefs = list()
 seclevels_array = list()
 seclevels_array.append('#include "minipkpsig-common.h"\n')
 seclevels_array.append('#include "minipkpsig-pstypes.h"\n')
-seclevels_array.append("MAYBE_STATIC slt seclevels[] = {\n")
+seclevels_array.append("MAYBE_STATIC const slt seclevels[] = {\n")
 for i, seclevel in zip(itertools.count(0), seclevels):
     name, pbytes, cbytes = seclevel
     seclevels_dict[name] = (i, pbytes, cbytes)
@@ -110,7 +110,7 @@ for pdline in pset_def_lines:
 
 pps_enumdefs = list()
 pps_array = list()
-pps_array.append("MAYBE_STATIC ppst pkp_paramsets[] = {\n")
+pps_array.append("MAYBE_STATIC const ppst pkp_paramsets[] = {\n")
 for i, pps in zip(itertools.count(0), pkp_paramsets):
     q, n, m, kfbase, ksl = pps
     ppsname = "q%dn%dm%dk%s" % (q, n, m, ksl)
@@ -121,7 +121,7 @@ pps_array.append("    {0,0,0,0,0}\n")
 pps_array.append("};\n")
 
 ps_array = list()
-ps_array.append("MAYBE_STATIC pst paramsets[] = {\n")
+ps_array.append("MAYBE_STATIC const pst paramsets[] = {\n")
 for pset in paramsets:
     ps_array.append("    {PPS_%s,0,SECLEVEL_%s,%d,%d},\n" % pset)
     pass
