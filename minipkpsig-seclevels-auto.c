@@ -1,6 +1,6 @@
 #include "minipkpsig-common.h"
 #include "minipkpsig-pstypes.h"
-static slt seclevels[] = {
+MAYBE_STATIC slt seclevels[] = {
     {"b80",10,20},
     {"b96",12,24},
     {"b112git",14,20},
