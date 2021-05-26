@@ -14,6 +14,7 @@ MAYBE_STATIC ppst pkp_paramsets[] = {
     {1409,87,42,24,SECLEVEL_c4},
     {1789,111,55,32,SECLEVEL_c5},
     {1789,111,55,32,SECLEVEL_c6},
+    {0,0,0,0,0}
 };
 MAYBE_STATIC pst paramsets[] = {
     {PPS_q797n55m25kc1a,0,SECLEVEL_c1a,40,73},
@@ -60,4 +61,5 @@ MAYBE_STATIC pst paramsets[] = {
     {PPS_q1789n111m55kc6,0,SECLEVEL_b112git,33,45},
     {PPS_q1789n111m55kc6,0,SECLEVEL_b96,28,39},
     {PPS_q1789n111m55kc6,0,SECLEVEL_b80,24,32},
+    {0,0,0,0,0}
 };

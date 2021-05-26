@@ -117,6 +117,7 @@ for i, pps in zip(itertools.count(0), pkp_paramsets):
     pps_enumdefs.append("#define PPS_%s %d\n" % (ppsname, i))
     pps_array.append("    {%d,%d,%d,%d,SECLEVEL_%s},\n" % (q,n,m,kfbase,ksl))
     pass
+pps_array.append("    {0,0,0,0,0}\n")
 pps_array.append("};\n")
 
 ps_array = list()
@@ -124,6 +125,7 @@ ps_array.append("MAYBE_STATIC pst paramsets[] = {\n")
 for pset in paramsets:
     ps_array.append("    {PPS_%s,0,SECLEVEL_%s,%d,%d},\n" % pset)
     pass
+ps_array.append("    {0,0,0,0,0}\n")
 ps_array.append("};\n")
 
 with open("minipkpsig-seclevels-auto.h", "w") as f:
