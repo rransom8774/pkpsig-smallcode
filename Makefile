@@ -25,6 +25,9 @@ minipkpsig-seclevels-auto.c minipkpsig-seclevels-auto.h minipkpsig-paramsets-aut
 minipkpsig-sym-shake256-xkcp.o: minipkpsig-sym-shake256-xkcp.c minipkpsig-symtypes.h minipkpsig-common.h
 	cc -g -c -o $@ $<
 
+minipkpsig-symalgs.o: minipkpsig-symalgs.c minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-common.h
+	cc -g -c -o $@ $<
+
 
 gentestvecs-modvc.o: gentestvecs-modvc.c minipkpsig-modvc.h minipkpsig-common.h
 	cc -g -c -o $@ $<
