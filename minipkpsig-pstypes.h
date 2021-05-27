@@ -15,3 +15,7 @@ typedef struct {
     u8 nrtx, nrl;
 } pst;
 
+#define seclevels NS(seclevels)
+#define pkp_paramsets NS(pkp_paramsets)
+#define paramsets NS(paramsets)
+

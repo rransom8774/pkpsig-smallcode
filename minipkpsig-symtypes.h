@@ -7,4 +7,5 @@ typedef struct {
 } symt;
 
 #define N_SYMALGS 3
+#define symalgs NS(symalgs)
 
