@@ -75,6 +75,7 @@ for i, seclevel in zip(itertools.count(0), seclevels):
     seclevels_enumdefs.append("#define SECLEVEL_%s %d\n" % (name, i))
     seclevels_array.append('    {"%s",%d,%d},\n' % (name, pbytes, cbytes))
     pass
+seclevels_enumdefs.append("#define N_SECLEVELS %d" % len(seclevels))
 seclevels_array.append("    {NULL,0,0}\n")
 seclevels_array.append("};\n")
 
@@ -117,10 +118,12 @@ for i, pps in zip(itertools.count(0), pkp_paramsets):
     pps_enumdefs.append("#define PPS_%s %d\n" % (ppsname, i))
     pps_array.append("    {%d,%d,%d,%d,SECLEVEL_%s},\n" % (q,n,m,kfbase,ksl))
     pass
+pps_enumdefs.append("#define N_PKP_PARAMSETS %d\n" % len(pkp_paramsets))
 pps_array.append("    {0,0,0,0,0}\n")
 pps_array.append("};\n")
 
 ps_array = list()
+ps_array.append("#define N_PARAMSETS %d\n" % len(paramsets))
 ps_array.append("MAYBE_STATIC const pst paramsets[] = {\n")
 for pset in paramsets:
     ps_array.append("    {PPS_%s,0,SECLEVEL_%s,%d,%d},\n" % pset)

@@ -9,3 +9,4 @@
 #define SECLEVEL_c4 8
 #define SECLEVEL_c5 9
 #define SECLEVEL_c6 10
+#define N_SECLEVELS 11
