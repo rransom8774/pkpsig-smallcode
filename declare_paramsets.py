@@ -118,12 +118,10 @@ for i, pps in zip(itertools.count(0), pkp_paramsets):
     pps_enumdefs.append("#define PPS_%s %d\n" % (ppsname, i))
     pps_array.append("    {%d,%d,%d,%d,SECLEVEL_%s},\n" % (q,n,m,kfbase,ksl))
     pass
-pps_enumdefs.append("#define N_PKP_PARAMSETS %d\n" % len(pkp_paramsets))
 pps_array.append("    {0,0,0,0,0}\n")
 pps_array.append("};\n")
 
 ps_array = list()
-ps_array.append("#define N_PARAMSETS %d\n" % len(paramsets))
 ps_array.append("MAYBE_STATIC const pst paramsets[] = {\n")
 for pset in paramsets:
     ps_array.append("    {PPS_%s,0,SECLEVEL_%s,%d,%d},\n" % pset)
@@ -142,6 +140,10 @@ with open("minipkpsig-seclevels-auto.c", "w") as f:
         pass
     pass
 
+with open("minipkpsig-paramsets-auto.h", "w") as f:
+    f.write("#define N_PKP_PARAMSETS %d\n" % len(pkp_paramsets))
+    f.write("#define N_PARAMSETS %d\n" % len(paramsets))
+    pass
 with open("minipkpsig-paramsets-auto.c", "w") as f:
     f.write('#include "minipkpsig-common.h"\n')
     f.write('#include "minipkpsig-pstypes.h"\n')

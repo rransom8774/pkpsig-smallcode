@@ -6,3 +6,5 @@ typedef struct {
     sym_xof_chunked xof_chunked;
 } symt;
 
+#define N_SYMALGS 3
+
