@@ -82,6 +82,7 @@ seclevels_array.append("};\n")
 pkp_paramsets = list()
 paramsets = list()
 th_max_total_leaf_bytes = 0
+th_max_sort_blocks = 0
 
 pset_def_lines = c_psets.strip().split('\n')
 for pdline in pset_def_lines:
@@ -111,6 +112,7 @@ for pdline in pset_def_lines:
     leaf_bytes_C2 = n*2
     th_max_total_leaf_bytes = max(th_max_total_leaf_bytes,
         leaves_C1 * leaf_bytes_C1, leaves_C2 * leaf_bytes_C2)
+    th_max_sort_blocks = max(th_max_sort_blocks, nrt*2)
     if sym == "shake256":
         paramsets.append((ppsname, ssl, nrtx, nrl))
         pass
@@ -162,5 +164,6 @@ with open("minipkpsig-paramsets-auto.c", "w") as f:
 
 with open("minipkpsig-treehash-auto.h", "w") as f:
     f.write("#define TH_MAX_TOTAL_LEAF_BYTES %d\n" % th_max_total_leaf_bytes)
+    f.write("#define TH_MAX_SORT_BLOCKS %d\n" % th_max_sort_blocks)
     pass
 
