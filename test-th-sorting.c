@@ -138,6 +138,8 @@ static int test_th_merge_seqs_step(int mergelen_l2) {
 int main(int argc, char *argv[]) {
     int rv = 0, i;
 
+    setvbuf(stdout, NULL, _IONBF, 0);
+
     rv = test_memcswap_ct();
     if (rv < 0) goto err; /* no point in testing anything else */
 
