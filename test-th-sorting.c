@@ -87,6 +87,8 @@ static int test_th_minmax_ct() {
 static void test_th_merge_seqs_setup() {
     th.n_blocks = TH_MAX_SORT_BLOCKS;
     th.leaf_bytes = 0;
+
+    printf("testing th_merge_seqs:");
 }
 
 static int test_th_merge_seqs_step(int mergelen_l2) {
@@ -95,7 +97,12 @@ static int test_th_merge_seqs_step(int mergelen_l2) {
     int a, b;
     int i;
 
-    if ((th.n_blocks >> (mergelen_l2-1)) == 0) return 1; /* done */
+    if ((th.n_blocks >> (mergelen_l2-1)) == 0) {
+        printf("\n");
+        return 1; /* done */
+    }
+
+    printf(" %d", mergelen_l2);
 
     /* Sorting networks can be verified using the 'zero-one principle':
      * if a sorting network correctly sorts every possible sequence of
@@ -118,7 +125,8 @@ static int test_th_merge_seqs_step(int mergelen_l2) {
 
     for (i = 1; i < mergelen && i < TH_MAX_SORT_BLOCKS; ++i) {
         if (th.sortkeys[i-1] > th.sortkeys[i]) {
-            printf("th_merge_seqs failed, mergelen_l2=%d, a=%d, b=%d, i=%d\n",
+            printf("\nth_merge_seqs failed, "
+                   "mergelen_l2=%d, a=%d, b=%d, i=%d\n",
                    mergelen_l2, a, b, i);
             return -1;
         }
@@ -137,7 +145,7 @@ int main(int argc, char *argv[]) {
     if (rv < 0) goto err; /* again, no point in testing anything else */
 
     test_th_merge_seqs_setup();
-    i = 1; while (!(rv == test_th_merge_seqs_step(i))) ++i;
+    i = 1; while (!(rv = test_th_merge_seqs_step(i))) ++i;
 
     return (rv < 0);
 
