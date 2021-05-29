@@ -1,3 +1,4 @@
 *~
 *.o
 gentestvecs-modvc
+test-th-sorting

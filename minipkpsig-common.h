@@ -33,3 +33,5 @@ typedef struct {
     size_t bytes;
 } NS(chunkt);
 
+typedef int (*NS(enum_names_cb))(void *cbdata, const char *name);
+
