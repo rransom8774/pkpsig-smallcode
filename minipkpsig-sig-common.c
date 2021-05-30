@@ -172,3 +172,47 @@ msv NS(th_merge_seqs)(tht *th, int mergelen_l2, int off) {
 }
 #define th_merge_seqs NS(th_merge_seqs)
 
+msv NS(th_sort_verifyC1)(tht *th) {
+    int i, nrt = (th->n_blocks >> 1);
+
+    /* th->sortkeys is almost sorted, except that for each i, key 2*i
+     * may be swapped with 2*i + 1.  Use th_minmax_ct directly to fix
+     * their order. */
+
+    for (i = 0; i < nrt; ++i) {
+        th_minmax_ct(th, 2*i, 2*i + 1);
+    }
+}
+#define th_sort_verifyC1 NS(th_sort_verifyC1)
+
+msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
+    /* th->sortkeys is almost sorted, except that there are two sorted
+     * subsequences, one at indices from 0 to nrs-1 and one at indices
+     * from nrs to nrt-1.  We can optimize Batcher's odd-even merging
+     * network for this case: only perform sorting on the aligned
+     * power-of-two blocks that are not already sorted.
+     *
+     * A chunk of the array needs to be sorted if and only if it contains
+     * the boundary between the short-proof runs and long-proof runs, i.e.
+     * the boundary between element nrs-1 and nrs.  Only one chunk per
+     * merge layer needs to be sorted. */
+
+    /* nrt (number of runs total) must have been computed by the caller. */
+    const int nrt = th->n_blocks, nrs = nrt - ps->nrl;
+
+    int mergelen_l2 = 1, mergelen = 1 << mergelen_l2;
+    int mergemask = mergelen - 1, chunkstart = nrs & ~mergemask;
+
+    while ((chunkstart != 0) || (nrt != nrt && mergemask)) {
+        if (chunkstart != nrs) {
+            th_merge_seqs(th, mergelen_l2, chunkstart);
+        }
+
+        /* increment mergelen_l2 and set all derived vars accordingly */
+        chunkstart |= nrs & mergelen;
+        ++mergelen_l2; mergelen += mergelen;
+        mergemask += mergemask+1;
+    }
+}
+#define th_sort_verifyC2 NS(th_sort_verifyC2)
+

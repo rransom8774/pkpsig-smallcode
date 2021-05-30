@@ -43,3 +43,8 @@ msv NS(th_minmax_ct)(tht *th, int i, int j);
 msv NS(th_merge_seqs)(tht *th, int mergelen_l2, int off);
 #define th_merge_seqs NS(th_merge_seqs)
 
+msv NS(th_sort_verifyC1)(tht *th);
+msv NS(th_sort_verifyC2)(tht *th, const pst *ps);
+#define th_sort_verifyC1 NS(th_sort_verifyC1)
+#define th_sort_verifyC2 NS(th_sort_verifyC2)
+
