@@ -156,14 +156,14 @@ msv NS(th_merge_seqs)(tht *th, int mergelen_l2, int off) {
     if (n > mergelen) n = mergelen;
 
     for (merge_layer = mergelen_l2 - 1, firstchunk=0, stride = 1<<merge_layer;
-         merge_layer > 0;
+         merge_layer >= 0;
          --merge_layer, firstchunk = stride = 1<<merge_layer) {
 
         for (chunkstart = firstchunk;
              chunkstart + stride < n;
              chunkstart += stride<<1) {
 
-            for (icswap = 0; icswap < stride; ++icswap) {
+            for (icswap = 0; icswap < stride && icswap+stride < n; ++icswap) {
                 th_minmax_ct(th, off+chunkstart+icswap,
                              off+chunkstart+icswap+stride);
             }
