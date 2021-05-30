@@ -209,9 +209,8 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
         }
 
         /* increment mergelen_l2 and set all derived vars accordingly */
-        chunkstart |= nrs & mergelen;
         ++mergelen_l2; mergelen += mergelen;
-        mergemask += mergemask+1;
+        mergemask += mergemask+1, chunkstart = nrs & ~mergemask;
     }
 }
 #define th_sort_verifyC2 NS(th_sort_verifyC2)
