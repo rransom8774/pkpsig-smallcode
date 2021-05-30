@@ -108,7 +108,8 @@ static int test_th_merge_seqs_step(int mergelen_l2) {
      * if a sorting network correctly sorts every possible sequence of
      * zeros and ones, then it works correctly for all inputs.  If the
      * set of inputs is restricted, as is the case for merging sorted
-     * subsequences, this test is fast enough to use in practice. */
+     * subsequences, this test is fast enough to use in practice for the
+     * sizes used here. */
 
     for (a = 0; a <= subseqlen; ++a) {
         for (b = 0; b <= subseqlen; ++b) {
