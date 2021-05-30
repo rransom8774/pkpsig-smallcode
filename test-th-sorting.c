@@ -108,8 +108,8 @@ static int test_th_merge_seqs_step(int mergelen_l2) {
      * if a sorting network correctly sorts every possible sequence of
      * zeros and ones, then it works correctly for all inputs.  If the
      * set of inputs is restricted, as is the case for merging sorted
-     * subsequences, this test is fast enough to use in practice for the
-     * sizes used here. */
+     * subsequences, this test is almost fast enough to be tolerable
+     * for the sizes used here. */
 
     for (a = 0; a <= subseqlen; ++a) {
         for (b = 0; b <= subseqlen; ++b) {
@@ -119,17 +119,16 @@ static int test_th_merge_seqs_step(int mergelen_l2) {
                     th.sortkeys[i+subseqlen] = (i>b) ? 1 : 0;
                 }
             }
-        }
-    }
+            th_merge_seqs(pth, mergelen_l2, 0);
 
-    th_merge_seqs(pth, mergelen_l2, 0);
-
-    for (i = 1; i < mergelen && i < TH_MAX_SORT_BLOCKS; ++i) {
-        if (th.sortkeys[i-1] > th.sortkeys[i]) {
-            printf("\nth_merge_seqs failed, "
-                   "mergelen_l2=%d, a=%d, b=%d, i=%d\n",
-                   mergelen_l2, a, b, i);
-            return -1;
+            for (i = 1; i < mergelen && i < TH_MAX_SORT_BLOCKS; ++i) {
+                if (th.sortkeys[i-1] > th.sortkeys[i]) {
+                    printf("\nth_merge_seqs failed, "
+                        "mergelen_l2=%d, a=%d, b=%d, i=%d\n",
+                        mergelen_l2, a, b, i);
+                    return -1;
+                }
+            }
         }
     }
 
