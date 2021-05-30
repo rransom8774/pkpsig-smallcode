@@ -138,7 +138,8 @@ static int test_th_merge_seqs_step(int mergelen_l2) {
 static void test_th_sort_verifyC2_setup() {
     th.leaf_bytes = 0;
 
-    printf("testing th_sort_verifyC2:\n");
+    printf("testing th_sort_verifyC2, N_PARAMSETS=%d:\n",
+           N_PARAMSETS);
 }
 
 static int test_th_sort_verifyC2_step(int ips) {
@@ -148,6 +149,9 @@ static int test_th_sort_verifyC2_step(int ips) {
               nrl = ps->nrl, nrs = nrt - nrl;
     const int max_subseqlen = (nrs > nrl) ? nrs : nrl;
     int a, b, i;
+
+    printf("  ips=%d, pps.q=%d, ssl=%s, nrt=%d, nrs=%d, nrl=%d\n",
+           ips, pkp_paramsets[ps->pps].q, ssl->name, nrt, nrs, nrl);
 
     th.n_blocks = nrt;
 
@@ -159,10 +163,8 @@ static int test_th_sort_verifyC2_step(int ips) {
         th_sort_verifyC2(&th, ps);
         for (i = 1; i < nrt; ++i) {
             if (th.sortkeys[i-1] > th.sortkeys[i]) {
-                    printf("\nth_sort_verifyC2 failed, "
-                        "ips=%d, nrt=%d, nrs=%d, nrl=%d, "
+                    printf("th_sort_verifyC2 failed, "
                         "a=%d, b=%d, i=%d\n",
-                        ips, nrt, nrs, nrl,
                         a, b, i);
                     return -1;
                 }
@@ -189,7 +191,7 @@ int main(int argc, char *argv[]) {
 
     test_th_sort_verifyC2_setup();
     FOR(i, N_PARAMSETS) {
-        if ((rv = test_th_sort_verifyC2_step(1)) != 0) break;
+        if ((rv = test_th_sort_verifyC2_step(i)) != 0) break;
     }
 
     return (rv < 0);
