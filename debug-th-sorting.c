@@ -168,13 +168,6 @@ sv draw_sort_debug_cb(tht *th, int nrs, int mergelen_l2, int chunkstart) {
     png_image_write_to_file(&img, namebuf, 0, image, IMG_WIDTH, palette);
 };
 
-static uint32_t u32le_get(const uint8_t *p) {
-  return (( ((uint32_t)p[0])       ) +
-	        ((((uint32_t)p[1]) <<  8)) +
-	        ((((uint32_t)p[2]) << 16)) +
-	        ((((uint32_t)p[3]) << 24)));
-};
-
 static int compare_u32(const void *px, const void *py) {
     u32 x = *(u32*)px, y = *(u32*)py;
     if (x < y) {

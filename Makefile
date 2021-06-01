@@ -8,15 +8,18 @@ clean:
 	-rm -v *.o
 
 
-gentestvecs-modvc: gentestvecs-modvc.o minipkpsig-modvc.o
+gentestvecs-modvc: gentestvecs-modvc.o minipkpsig-modvc.o minipkpsig-common.o
 	cc -g -o $@ $+ -lXKCP
 
-test-th-sorting: test-th-sorting.o minipkpsig-sig-verify.o minipkpsig-sig-common.o minipkpsig-paramsets-auto.o minipkpsig-seclevels-auto.o minipkpsig-symalgs.o minipkpsig-sym-shake256-xkcp.o minipkpsig-modvc.o
+test-th-sorting: test-th-sorting.o minipkpsig-sig-verify.o minipkpsig-sig-common.o minipkpsig-paramsets-auto.o minipkpsig-seclevels-auto.o minipkpsig-symalgs.o minipkpsig-sym-shake256-xkcp.o minipkpsig-modvc.o minipkpsig-common.o
 	cc -g -o $@ $+ -lXKCP
 
-debug-th-sorting: debug-th-sorting.o minipkpsig-sig-verify-debug.o minipkpsig-sig-common.o minipkpsig-paramsets-auto.o minipkpsig-seclevels-auto.o minipkpsig-symalgs.o minipkpsig-sym-shake256-xkcp.o minipkpsig-modvc.o
+debug-th-sorting: debug-th-sorting.o minipkpsig-sig-verify-debug.o minipkpsig-sig-common.o minipkpsig-paramsets-auto.o minipkpsig-seclevels-auto.o minipkpsig-symalgs.o minipkpsig-sym-shake256-xkcp.o minipkpsig-modvc.o minipkpsig-common.o
 	cc -g -o $@ $+ -lXKCP -lpng16
 
+
+minipkpsig-common.o: minipkpsig-common.c minipkpsig-common.h
+	cc -g -c -o $@ $<
 
 minipkpsig-modvc.o: minipkpsig-modvc.c minipkpsig-modvc.h minipkpsig-common.h
 	cc -g -c -o $@ $<

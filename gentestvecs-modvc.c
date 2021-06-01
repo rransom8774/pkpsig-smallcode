@@ -114,13 +114,6 @@ static void tv_init(struct test_vector *tv) {
   tv->tvs = NULL;
 };
 
-static uint32_t u32le_get(const uint8_t *p) {
-  return (( ((uint32_t)p[0])       ) +
-	        ((((uint32_t)p[1]) <<  8)) +
-	        ((((uint32_t)p[2]) << 16)) +
-	        ((((uint32_t)p[3]) << 24)));
-};
-
 static int tv_generate_R(struct test_vector *tv) {
   size_t Rlen = tv->tvs->Mlen;
   uint8_t *buf = malloc(4 * Rlen);
