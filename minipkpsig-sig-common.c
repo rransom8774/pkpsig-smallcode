@@ -9,6 +9,7 @@
  */
 
 #include "minipkpsig-common.h"
+#include "minipkpsig-modvc.h"
 #include "minipkpsig-symtypes.h"
 #include "minipkpsig-pstypes.h"
 #include "minipkpsig-paramsets-auto.h"
@@ -108,4 +109,69 @@ MAYBE_STATIC int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata) {
 #define ps_enum_names NS(ps_enum_names)
 
 #undef ps
+
+MAYBE_STATIC u16 NS(scs_mod_q)(const sigcommonstate *cst, u32 x) {
+    x += (cst->q_reduce_2_24 * (x>>24));
+    return mod(cst->q_mod, x);
+}
+#define scs_mod_q NS(scs_mod_q)
+
+msv NS(scs_init)(sigcommonstate *cst, const pst *ps) {
+    u16 M[PKPSIG_MAX_N];
+    int i, n;
+
+    memset(cst, 0, sizeof(cst));
+
+    cst->ps = *ps;
+    cst->pps = pkp_paramsets[ps->pps];
+    cst->ksl = seclevels[cst->pps.ksl];
+    cst->ssl = seclevels[ps->ssl];
+
+    cst->xof = symalgs[ps->sym].xof_chunked;
+
+    mod_init(cst->q_mod, cst->pps.q);
+    cst->q_reduce_2_24 = (1UL << 24) % (u32)cst->pps.q;
+
+    n = cst->pps.n;
+    FOR(i, n) M[i] = cst->pps.q;
+    vc_init(cst->vcpk, M, cst->pps.m);
+    vc_init(cst->vcz, M, cst->pps.n);
+
+    FOR(i, n-1) M[i] = cst->pps.n - i;
+    vc_init(cst->vcrho, M, cst->pps.n - 1);
+}
+#define scs_init NS(scs_init)
+
+MAYBE_STATIC size_t NS(scs_pksize)(sigcommonstate *cst) {
+    return cst->pps.kf_base+1 + vc_nS(cst->vcpk);
+}
+#define scs_pksize NS(scs_pksize)
+
+msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
+    const int n = cst->pps.n, m = cst->pps.m;
+    u32 i, j; u8 ibuf[4];
+    u8 hashctx = HASHCTX_PUBPARAMS;
+    NS(chunkt) out[1] = {cst->hashbuf, n*4};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {cst->pkbytes, cst->pps.kf_base+1},
+        {ibuf, 4},
+        {NULL, 0}
+    };
+
+    memcpy(cst->pkbytes, pkbytes, scs_pksize(cst));
+
+    vc_decode(cst->vcpk, cst->w, pkbytes + cst->pps.kf_base+1);
+
+    u32le_put(ibuf, 0);
+    cst->xof(out, in);
+    FOR(j, n) cst->v[j] = scs_mod_q(cst, u32le_get(cst->hashbuf + 4*j));
+
+    for (i = n - m; i < n; ++i) {
+        u32le_put(ibuf, i);
+        cst->xof(out, in);
+        FOR(j, m) cst->A[i-m][j] = scs_mod_q(cst, u32le_get(cst->hashbuf + 4*j));
+    }
+}
+#define scs_expand_pk NS(scs_expand_pk)
 

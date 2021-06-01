@@ -8,6 +8,10 @@
  * WARRANTY WHATSOEVER.
  */
 
+typedef struct {
+    sigcommonstate cst;
+} sigverifystate;
+
 msv NS(memcswap_ct)(u8 *px, u8 *py, size_t len, int flag);
 msv NS(th_minmax_ct)(tht *th, int i, int j);
 #define memcswap_ct NS(memcswap_ct)

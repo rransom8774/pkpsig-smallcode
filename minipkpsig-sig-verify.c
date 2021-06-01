@@ -9,6 +9,7 @@
  */
 
 #include "minipkpsig-common.h"
+#include "minipkpsig-modvc.h"
 #include "minipkpsig-symtypes.h"
 #include "minipkpsig-pstypes.h"
 #include "minipkpsig-paramsets-auto.h"
