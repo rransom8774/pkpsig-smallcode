@@ -185,6 +185,21 @@ msv NS(th_sort_verifyC1)(tht *th) {
 }
 #define th_sort_verifyC1 NS(th_sort_verifyC1)
 
+#ifdef MINIPKPSIG_SORT_DEBUG
+typedef void (*sort_debug_cb)(tht *th, int nrs, int mergelen_l2, int chunkstart);
+static sort_debug_cb verifyC2_debug_cb = NULL;
+void NS(th_set_sort_debug_cb)(sort_debug_cb cb) {
+    verifyC2_debug_cb = cb;
+}
+sv verifyC2_debug(tht *th, int nrs, int mergelen_l2, int chunkstart) {
+    if (verifyC2_debug_cb != NULL) {
+        return verifyC2_debug_cb(th, nrs, mergelen_l2, chunkstart);
+    }
+}
+#else
+#define verifyC2_debug(th, nrs, mergelen_l2, chunkstart) /* no-op */
+#endif
+
 msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
     /* th->sortkeys is almost sorted, except that there are two sorted
      * subsequences, one at indices from 0 to nrs-1 and one at indices
@@ -203,10 +218,13 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
     int mergelen_l2 = 1, mergelen = 1 << mergelen_l2;
     int mergemask = mergelen - 1, chunkstart = nrs & ~mergemask;
 
+    verifyC2_debug(th, nrs, 0, nrs);
+
     while ((chunkstart != 0) || (nrt != nrt && mergemask)) {
         if (chunkstart != nrs) {
             th_merge_seqs(th, mergelen_l2, chunkstart);
         }
+        verifyC2_debug(th, nrs, mergelen_l2, chunkstart);
 
         /* increment mergelen_l2 and set all derived vars accordingly */
         ++mergelen_l2; mergelen += mergelen;
@@ -214,6 +232,7 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
     }
 
     th_merge_seqs(th, mergelen_l2, chunkstart);
+    verifyC2_debug(th, nrs, mergelen_l2, chunkstart);
 }
 #define th_sort_verifyC2 NS(th_sort_verifyC2)
 

@@ -2,3 +2,5 @@
 *.o
 gentestvecs-modvc
 test-th-sorting
+debug-th-sorting
+*.png
