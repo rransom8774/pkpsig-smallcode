@@ -4,3 +4,5 @@ gentestvecs-modvc
 test-th-sorting
 debug-th-sorting
 *.png
+TVSet_*.bin
+TVSet_*.txt
