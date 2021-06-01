@@ -230,7 +230,7 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
 
     verifyC2_debug(th, nrs, 0, nrs);
 
-    while ((chunkstart != 0) || (nrt != nrt && mergemask)) {
+    while ((chunkstart != 0) || (mergelen < nrt)) {
         if (chunkstart != nrs) {
             th_merge_seqs(th, mergelen_l2, chunkstart);
         }

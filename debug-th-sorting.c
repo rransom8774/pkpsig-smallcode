@@ -226,7 +226,7 @@ static void init_array(int ips, const char *seed) {
 }
 
 int main(int argc, char *argv[]) {
-    init_array(15, "foo");
+    init_array(0, "foo");
     minipkpsig_th_set_sort_debug_cb(draw_sort_debug_cb);
     th_sort_verifyC2(pth, ps);
 
