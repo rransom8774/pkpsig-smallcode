@@ -129,10 +129,12 @@ sv draw_array(int chunkstart, int mergelen) {
     memset(image, IPAL_BG, sizeof(image));
 
     draw_vline(0, 0, IMG_HEIGHT_ARRAY, IPAL_BORDER);
-    FOR(i, th.n_blocks) {
+    FOR(i, th.n_blocks + 50) {
         int x = 1 + i*(IMG_ARRAY_ELT_MARK_SIZE + IMG_ARRAY_LINE_WIDTH);
-        int dot_y = IMG_ARRAY_ELT_MARK_SIZE * (th.n_blocks - th.sortkeys[i]);
+        int dot_y = IMG_ARRAY_ELT_MARK_SIZE *
+                    ((th.n_blocks + 1) - (th.sortkeys[i] + 1));
         const point dot_ul = {x, dot_y};
+        if (th.sortkeys[i] > th.n_blocks) continue;
         draw_vline(x+IMG_ARRAY_ELT_MARK_SIZE, 0, IMG_HEIGHT_ARRAY, IPAL_BORDER);
         draw_dot(dot_ul, IPAL_ELEMENT);
     }
@@ -146,8 +148,8 @@ sv draw_array(int chunkstart, int mergelen) {
 
 sv draw_sort_debug_cb(tht *th, int nrs, int mergelen_l2, int chunkstart) {
     int mergelen = 1 << mergelen_l2;
-    int width = 1 + th->n_blocks*(IMG_ARRAY_ELT_MARK_SIZE + IMG_ARRAY_LINE_WIDTH);
-    int height = th->n_blocks*(IMG_ARRAY_ELT_MARK_SIZE);
+    int width = 1 + (th->n_blocks+50)*(IMG_ARRAY_ELT_MARK_SIZE + IMG_ARRAY_LINE_WIDTH);
+    int height = (th->n_blocks+1)*(IMG_ARRAY_ELT_MARK_SIZE);
     char namebuf[64];
     png_image img;
 
