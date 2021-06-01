@@ -62,7 +62,7 @@ sv vclayer_init_next(vct *vc, int layer) {
     for (i=0; i < nlower-1; i += 2) {
         u32 merged = (u32)(lc->M[i].orig) * (u32)(lc->M[i+1].orig);
         u8 nS = 0;
-        while (merged > VEC_LIMIT) {
+        while (merged >= VEC_LIMIT) {
             ++nS; merged = (merged + 255) / 256;
         }
         nbytes += lc->nS[i/2] = nS;
