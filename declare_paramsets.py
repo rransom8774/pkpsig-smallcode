@@ -83,6 +83,33 @@ pkp_paramsets = list()
 paramsets = list()
 th_max_total_leaf_bytes = 0
 th_max_sort_blocks = 0
+max_n, max_m, max_A_cols = 0, 0, 0
+max_skbytes, max_pkbytes = 0, 0
+
+def encode_bytes(M):
+    M2 = list()
+    if len(M) == 0:
+        return 0
+    if len(M) == 1:
+        nS, m = 0, M[0]
+        while m > 1:
+            nS += 1
+            m = (m+255)//256
+            pass
+        return nS
+    nS = 0
+    for i in range(0, len(M)-1, 2):
+        m2 = M[i]*M[i+1]
+        while m2 >= 16384:
+            nS += 1
+            m2 = (m2+255)//256
+            pass
+        M2.append(m2)
+        pass
+    if len(M) & 1:
+        M2.append(M[-1])
+        pass
+    return nS + encode_bytes(M2)
 
 pset_def_lines = c_psets.strip().split('\n')
 for pdline in pset_def_lines:
@@ -96,6 +123,11 @@ for pdline in pset_def_lines:
     kf, qs, ns, ms, ksl, ssl, sym, nrss, nrls = pdelts
     kfbase = keyfmt_bases[kf]
     q, n, m = int(qs), int(ns), int(ms)
+    max_n = max(max_n, n)
+    max_m = max(max_m, m)
+    max_A_cols = max(max_A_cols, n - m)
+    max_skbytes = max(max_skbytes, (kfbase//2)*11 + 1)
+    max_pkbytes = max(max_pkbytes, kfbase+1 + encode_bytes((q,)*m))
     nrs, nrl = int(nrss), int(nrls) # number of runs, short- and long-proof
     pps = (q, n, m, kfbase, ksl)
     if pps not in pkp_paramsets:
@@ -150,6 +182,11 @@ with open("minipkpsig-seclevels-auto.c", "w") as f:
     pass
 
 with open("minipkpsig-paramsets-auto.h", "w") as f:
+    f.write("#define PKPSIG_MAX_N %d\n" % max_n)
+    f.write("#define PKPSIG_MAX_M %d\n" % max_m)
+    f.write("#define PKPSIG_MAX_A_COLS %d\n" % max_A_cols)
+    f.write("#define PKPSIG_MAX_SECRET_KEY_BYTES %d\n" % max_skbytes)
+    f.write("#define PKPSIG_MAX_PUBLIC_KEY_BYTES %d\n" % max_pkbytes)
     f.write("#define N_PKP_PARAMSETS %d\n" % len(pkp_paramsets))
     f.write("#define N_PARAMSETS %d\n" % len(paramsets))
     pass
