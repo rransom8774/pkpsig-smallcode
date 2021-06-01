@@ -116,7 +116,7 @@ msv NS(vc_encode_)(const vct *vc, u8 S[], u16 R[]) {
     }
 }
 
-msv NS(vc_decode_)(const vct *vc, u16 R[], u8 S[]) {
+msv NS(vc_decode_)(const vct *vc, u16 R[], const u8 S[]) {
     int k, j, i;
     R[0] = 0;
     k=-1; FOR(j, VEC_MAXLAYERS) k += vc->layers[j].nbytes;
