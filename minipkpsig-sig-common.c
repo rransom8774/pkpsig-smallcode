@@ -26,6 +26,10 @@ extern symt symalgs[];
 extern pst paramsets[];
 #endif
 
+#ifdef MINIPKPSIG_SORT_DEBUG
+#include <assert.h>
+#endif
+
 static int strheadmatch(const char *head, const char *s) {
     size_t len = strlen(head);
     size_t lens = strlen(s);
@@ -136,6 +140,10 @@ msv NS(th_minmax_ct)(tht *th, int i, int j) {
     int flag = ct_lt_u32(kj, ki); /* note order */
     u32 swapmask = -(u32)flag;
     u32 z = (ki^kj) & swapmask;
+#ifdef MINIPKPSIG_SORT_DEBUG
+    assert(i < th->n_blocks);
+    assert(j < th->n_blocks);
+#endif
     ki ^= z; kj ^= z;
     th->sortkeys[i] = ki; th->sortkeys[j] = kj;
     memcswap_ct(th->leaves + i*lb, th->leaves + j*lb, lb, flag);
@@ -163,7 +171,9 @@ msv NS(th_merge_seqs)(tht *th, int mergelen_l2, int off) {
              chunkstart + stride < n;
              chunkstart += stride<<1) {
 
-            for (icswap = 0; icswap < stride && icswap+stride < n; ++icswap) {
+            for (icswap = 0;
+                 icswap < stride && (chunkstart+icswap+stride) < n;
+                 ++icswap) {
                 th_minmax_ct(th, off+chunkstart+icswap,
                              off+chunkstart+icswap+stride);
             }
