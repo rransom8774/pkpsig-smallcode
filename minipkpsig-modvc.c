@@ -75,7 +75,7 @@ sv vclayer_init_next(vct *vc, int layer) {
     lc->nbytes = nbytes;
 }
 
-msv NS(vc_init_)(vct *vc, u16 M[], u16 Mlen) {
+msv NS(vc_init_)(vct *vc, const u16 M[], u16 Mlen) {
     int i;
     vc->layers[0].nlower = Mlen;
     FOR(i, Mlen) mod_init(vc->layers[0].M[i], M[i]);

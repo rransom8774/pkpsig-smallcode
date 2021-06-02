@@ -36,7 +36,7 @@ MAYBE_STATIC u32 NS(moddiv_)(const modt *m, u32 *pq, u32 v);
 #define moddiv(m,q,v) NS(moddiv_)(&(m), &(q), (v))
 #define mod(m, v) NS(moddiv_)(&(m), NULL, (v))
 
-msv NS(vc_init_)(vct *vc, u16 M[], u16 Mlen);
+msv NS(vc_init_)(vct *vc, const u16 M[], u16 Mlen);
 MAYBE_STATIC unsigned int NS(vc_nS_)(const vct *vc);
 msv NS(vc_encode_)(const vct *vc, u8 S[], u16 R[]);
 msv NS(vc_decode_)(const vct *vc, u16 R[], const u8 S[]);
