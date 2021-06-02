@@ -66,6 +66,7 @@ typedef struct {
     slt ksl, ssl;
     sym_xof_chunked xof;
 
+    u8 salt_and_msghash[2*PKPSIG_MAX_KEY_CRHASH_BYTES];
     u8 pkbytes[PKPSIG_MAX_PUBLIC_KEY_BYTES];
     u8 hashbuf[TH_MAX_SORT_BLOCKS * 4];
 } sigcommonstate;

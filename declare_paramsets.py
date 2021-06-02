@@ -87,6 +87,7 @@ th_max_prefix_bytes = 0
 th_max_degree = 0
 max_n, max_m, max_A_cols = 0, 0, 0
 max_skbytes, max_pkbytes = 0, 0
+max_ksl_cbytes = 0
 
 def encode_bytes(M):
     M2 = list()
@@ -148,6 +149,7 @@ for pdline in pset_def_lines:
         leaves_C1 * leaf_bytes_C1, leaves_C2 * leaf_bytes_C2)
     th_max_sort_blocks = max(th_max_sort_blocks, nrt*2)
     ksl_cbytes = seclevels_dict[ksl][2]
+    max_ksl_cbytes = max(max_ksl_cbytes, ksl_cbytes)
     th_max_prefix_bytes = 2 * ksl_cbytes
     th_degree = (136*4 - 16 - 2*ksl_cbytes) / ssl_cbytes
     th_max_degree = max(th_max_degree, th_degree)
@@ -193,6 +195,7 @@ with open("minipkpsig-paramsets-auto.h", "w") as f:
     f.write("#define PKPSIG_MAX_A_COLS %d\n" % max_A_cols)
     f.write("#define PKPSIG_MAX_SECRET_KEY_BYTES %d\n" % max_skbytes)
     f.write("#define PKPSIG_MAX_PUBLIC_KEY_BYTES %d\n" % max_pkbytes)
+    f.write("#define PKPSIG_MAX_KEY_CRHASH_BYTES %d\n" % max_ksl_cbytes)
     f.write("#define N_PKP_PARAMSETS %d\n" % len(pkp_paramsets))
     f.write("#define N_PARAMSETS %d\n" % len(paramsets))
     pass
