@@ -245,3 +245,17 @@ msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
 }
 #define scs_expand_pk NS(scs_expand_pk)
 
+msv NS(scs_mult_by_A)(sigcommonstate *cst, const u16 *z) {
+    const int n = cst->pps.n, m = cst->pps.m;
+    int i, j;
+
+    FOR(i, m) cst->multbuf[i] = z[i];
+    for (i = m; i < n; ++i) {
+        FOR(j, m) cst->multbuf[j] += z[i] * cst->A[i-m][j];
+    }
+
+    FOR(i, m) cst->multbuf[i] = scs_mod_q(cst, cst->multbuf[i]);
+
+    /* leaves result in multbuf[] */
+}
+

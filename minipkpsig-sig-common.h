@@ -75,8 +75,10 @@ MAYBE_STATIC u16 NS(scs_mod_q)(const sigcommonstate *cst, u32 x);
 msv NS(scs_init)(sigcommonstate *cst, const pst *ps);
 MAYBE_STATIC size_t NS(scs_pksize)(sigcommonstate *cst);
 msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes);
+msv NS(scs_mult_by_A)(sigcommonstate *cst, const u16 *z);
 #define scs_mod_q NS(scs_mod_q)
 #define scs_init NS(scs_init)
 #define scs_pksize NS(scs_pksize)
 #define scs_expand_pk NS(scs_expand_pk)
+#define scs_mult_by_A NS(scs_mult_by_A)
 
