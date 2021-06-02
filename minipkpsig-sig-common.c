@@ -17,6 +17,7 @@
 #include "minipkpsig-treehash-auto.h"
 #include "minipkpsig-sig-common.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -110,6 +111,73 @@ MAYBE_STATIC int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata) {
 
 #undef ps
 
+msv NS(th_init)(tht *th, const pst *ps) {
+    const ppst *pps = &(pkp_paramsets[ps->pps]);
+    int ksl_cbytes = seclevels[pps->ksl].cbytes;
+    int ssl_pbytes = seclevels[ps->ssl].pbytes;
+    int ssl_cbytes = seclevels[ps->ssl].cbytes;
+    int nrt = ps->nrtx + ssl_pbytes*8, nrs = nrt - ps->nrl;
+
+    memset(th, 0, sizeof(*th));
+
+    th->xof = symalgs[ps->sym].xof_chunked;
+    th->prefix_bytes = ksl_cbytes * 2;
+    th->degree = (136*4 - 16 - th->prefix_bytes) / ksl_cbytes;
+    th->params[0] = th->degree;
+    th->params[1] = th->node_bytes = ssl_cbytes;
+    u16le_put(th->params + 3, nrs);
+    u16le_put(th->params + 5, ps->nrl);
+}
+
+sv th_hash_level(tht *th) {
+    u32 node_index = th->next_node_index; u8 nibuf[4];
+    size_t in_node_bytes = th->leaf_bytes, out_node_bytes = th->node_bytes;
+    NS(chunkt) outchunk[1] = {NULL, th->node_bytes};
+    NS(chunkt) in[TH_MAX_DEGREE + 4] = {
+        {&(th->hashctx), 1},
+        {th->prefix, th->prefix_bytes},
+        {nibuf, 4},
+        {NULL, 0}
+    };
+    const int degree = th->degree, n = th->n_blocks;
+    int i, idx_in, idx_out;
+
+    FOR(i, TH_MAX_DEGREE+1) in[3+i].p = NULL;
+
+    i = idx_in = idx_out = 0;
+    while (idx_in < n) {
+        FOR(i, degree) {
+            if (idx_in >= n) {
+                in[3+i].p = NULL;
+                break;
+            }
+            in[3+i].p = th->leaves + idx_in*in_node_bytes;
+            in[3+i].bytes = in_node_bytes;
+            ++idx_in;
+        }
+
+        u32le_put(nibuf, node_index);
+        outchunk->p = th->leaves + idx_out*out_node_bytes;
+        th->xof(outchunk, in);
+        ++idx_out; ++node_index;
+    }
+
+    th->next_node_index = node_index;
+    th->node_bytes = out_node_bytes;
+    th->n_blocks = idx_out;
+}
+
+msv NS(th_hash)(tht *th, u8 *out, size_t outbytes) {
+    assert(th->node_bytes >= outbytes);
+    th->params[2] = outbytes;
+
+    while (th->n_blocks != 1) {
+        th_hash_level(th);
+    }
+
+    memcpy(out, th->leaves, outbytes);
+}
+
 MAYBE_STATIC u16 NS(scs_mod_q)(const sigcommonstate *cst, u32 x) {
     x += (cst->q_reduce_2_24 * (x>>24));
     return mod(cst->q_mod, x);
@@ -131,6 +199,8 @@ msv NS(scs_init)(sigcommonstate *cst, const pst *ps) {
 
     mod_init(cst->q_mod, cst->pps.q);
     cst->q_reduce_2_24 = (1UL << 24) % (u32)cst->pps.q;
+
+    th_init(&(cst->th), ps);
 
     n = cst->pps.n;
     FOR(i, n) M[i] = cst->pps.q;

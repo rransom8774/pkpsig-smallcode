@@ -10,6 +10,11 @@
 
 #include "minipkpsig-common.h"
 
+msv NS(u16le_put)(uint8_t *buf, uint16_t x) {
+  buf[0] =  x        & 255;
+  buf[1] = (x >>  8) & 255;
+};
+
 MAYBE_STATIC u32 NS(u32le_get)(const u8 *p) {
   return (( ((u32)p[0])       ) +
           ((((u32)p[1]) <<  8)) +

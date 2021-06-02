@@ -35,6 +35,9 @@ typedef struct {
 
 typedef int (*NS(enum_names_cb))(void *cbdata, const char *name);
 
+msv NS(u16le_put)(uint8_t *buf, uint16_t x);
+#define u16le_put NS(u16le_put)
+
 MAYBE_STATIC u32 NS(u32le_get)(const u8 *p);
 msv NS(u32le_put)(uint8_t *buf, uint32_t x);
 #define u32le_get NS(u32le_get)

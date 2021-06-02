@@ -23,18 +23,32 @@
 #define HASHCTX_INTERNAL_GENBLINDINGSEEDGENSEED 0x81
 #define HASHCTX_INTERNAL_GENBLINDINGSEED 0x82
 
+#define TH_PARAM_BYTES 7
+
 MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name);
 MAYBE_STATIC int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata);
 #define ps_lookup(ps_, name) NS(ps_lookup_)(&(ps_), (name))
 #define ps_enum_names NS(ps_enum_names)
 
 typedef struct {
+    sym_xof_chunked xof;
     size_t leaf_bytes;
     int n_blocks;
     u32 next_node_index;
+    u8 prefix[TH_MAX_PREFIX_BYTES];
+    u16 node_bytes;
+    u8 prefix_bytes;
+    u8 degree;
+    u8 hashctx;
+    u8 params[TH_PARAM_BYTES];
     u32 sortkeys[TH_MAX_SORT_BLOCKS];
     u8 leaves[TH_MAX_TOTAL_LEAF_BYTES];
 } tht;
+
+msv NS(th_init)(tht *th, const pst *ps);
+msv NS(th_hash)(tht *th, u8 *out, size_t outbytes);
+#define th_init NS(th_init)
+#define th_hash NS(th_hash)
 
 typedef struct {
     tht th;
