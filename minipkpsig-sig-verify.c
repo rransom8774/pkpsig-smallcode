@@ -162,3 +162,20 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
 }
 #define th_sort_verifyC2 NS(th_sort_verifyC2)
 
+msv NS(th_sort_keys_full)(tht *th) {
+    /* th->sortkeys is unordered, but th->leaf_bytes is 0.  Optimize later. */
+    const int n = th->n_blocks;
+    int mergelen_l2 = 1, mergelen = 1 << mergelen_l2, i;
+
+    th->leaf_bytes = 0; /* ensure implementation can be changed later */
+
+    for (mergelen_l2 = 1, mergelen = 1 << mergelen_l2;
+         mergelen < n;
+         ++mergelen_l2, mergelen += mergelen) {
+
+        for (i = 0; i < n; i += mergelen) {
+            th_merge_seqs(th, mergelen_l2, i);
+        }
+    }
+}
+

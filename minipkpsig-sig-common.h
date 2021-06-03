@@ -57,7 +57,7 @@ typedef struct {
     u16 A[PKPSIG_MAX_A_COLS][PKPSIG_MAX_M];
     u16 v[PKPSIG_MAX_N], w[PKPSIG_MAX_M];
     u32 multbuf[PKPSIG_MAX_M];
-    u32 Hbuf[TH_MAX_SORT_BLOCKS];
+    u16 Hbuf[PKPSIG_MAX_N_RUNS_TOTAL];
 
     modt q_mod;
     u16 q_reduce_2_24;
@@ -67,18 +67,26 @@ typedef struct {
     sym_xof_chunked xof;
 
     u8 salt_and_msghash[2*PKPSIG_MAX_KEY_CRHASH_BYTES];
+    u8 h_C1[PKPSIG_MAX_SIG_CRHASH_BYTES];
+    u8 h_C2[PKPSIG_MAX_SIG_CRHASH_BYTES];
     u8 pkbytes[PKPSIG_MAX_PUBLIC_KEY_BYTES];
     u8 hashbuf[TH_MAX_SORT_BLOCKS * 4];
 } sigcommonstate;
 
 MAYBE_STATIC u16 NS(scs_mod_q)(const sigcommonstate *cst, u32 x);
 msv NS(scs_init)(sigcommonstate *cst, const pst *ps);
+msv NS(scs_hash_message)(sigcommonstate *cst, const u8 *msg, size_t len);
 MAYBE_STATIC size_t NS(scs_pksize)(sigcommonstate *cst);
 msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes);
 msv NS(scs_mult_by_A)(sigcommonstate *cst, const u16 *z);
+msv NS(scs_expand_H1)(sigcommonstate *cst);
+msv NS(scs_expand_H2)(sigcommonstate *cst);
 #define scs_mod_q NS(scs_mod_q)
 #define scs_init NS(scs_init)
+#define scs_hash_message NS(scs_hash_message)
 #define scs_pksize NS(scs_pksize)
 #define scs_expand_pk NS(scs_expand_pk)
 #define scs_mult_by_A NS(scs_mult_by_A)
+#define scs_expand_H1 NS(scs_expand_H1)
+#define scs_expand_H2 NS(scs_expand_H2)
 

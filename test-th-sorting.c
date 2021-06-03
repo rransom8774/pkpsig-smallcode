@@ -22,8 +22,11 @@
 #include "minipkpsig-sig-verify.h"
 #endif
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <XKCP/SimpleFIPS202.h>
 
 #ifndef MINIPKPSIG_SINGLEFILE
 extern slt seclevels[];
@@ -176,6 +179,47 @@ static int test_th_sort_verifyC2_step(int ips) {
     return 0;
 }
 
+static void test_th_sort_keys_full_setup(int runcount) {
+    th.leaf_bytes = 0;
+
+    printf("testing th_sort_keys_full, runcount=%d:",
+           runcount);
+}
+
+static int test_th_sort_keys_full_step(u32 seed, int n) {
+    /* Testing the full network as a black box using the zero-one principle
+     * would be infeasible, and the earlier tests have already verified the
+     * merge routine.  Run a random test case to make sure the overall sort
+     * routine isn't broken. */
+
+    int i;
+    u8 seedbytes[4];
+
+    printf(" %d(%d)", (int)seed, n);
+    if (seed % 10 == 9) printf("\n");
+
+    th.n_blocks = n;
+    th.leaf_bytes = 0;
+    u32le_put(seedbytes, seed);
+
+    assert(TH_MAX_TOTAL_LEAF_BYTES / 4 >= n);
+    assert(TH_MAX_SORT_BLOCKS >= n);
+
+    SHAKE256(th.leaves, 4*n, seedbytes, 4);
+
+    FOR(i, n) th.sortkeys[i] = u32le_get(th.leaves + 4*i);
+    th_sort_keys_full(pth);
+    FOR(i, n-1) {
+        if (th.sortkeys[i] > th.sortkeys[i+1]) {
+            printf("\nth_sort_keys_full failed, seed=%d, n=%d, i=%d\n",
+                   (int)seed, n, i);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
     int rv = 0, i;
 
@@ -195,6 +239,9 @@ int main(int argc, char *argv[]) {
     FOR(i, N_PARAMSETS) {
         if ((rv = test_th_sort_verifyC2_step(i)) != 0) break;
     }
+
+    test_th_sort_keys_full_setup(100);
+    FOR(i, 100) test_th_sort_keys_full_step(i, i*10);
 
     return (rv < 0);
 

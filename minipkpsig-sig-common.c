@@ -259,3 +259,50 @@ msv NS(scs_mult_by_A)(sigcommonstate *cst, const u16 *z) {
     /* leaves result in multbuf[] */
 }
 
+msv NS(scs_expand_H1)(sigcommonstate *cst) {
+    u16 nrt = cst->ssl.pbytes*8 + cst->ps.nrtx;
+    u8 hashctx = HASHCTX_CHALLENGE1EXPAND;
+    NS(chunkt) out[1] = {{cst->hashbuf, nrt*4}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {cst->salt_and_msghash, 2*cst->ksl.cbytes},
+        {cst->h_C1, cst->ssl.cbytes},
+        {NULL, 0}
+    };
+    int i;
+
+    cst->xof(out, in);
+
+    FOR(i, nrt) {
+        u32 x = u32le_get(cst->hashbuf + 4*i);
+        cst->Hbuf[i] = (cst->Hbuf[i] & 0x8000) | scs_mod_q(cst, x);
+    }
+}
+
+msv NS(scs_expand_H2)(sigcommonstate *cst) {
+    u16 nrt = cst->ssl.pbytes*8 + cst->ps.nrtx, nrl = cst->ps.nrl;
+    u8 hashctx = HASHCTX_CHALLENGE2EXPAND;
+    NS(chunkt) out[1] = {{cst->hashbuf, nrt*4}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {cst->salt_and_msghash, 2*cst->ksl.cbytes},
+        {cst->h_C1, cst->ssl.cbytes},
+        {NULL, 0}
+    };
+    int i;
+
+    cst->xof(out, in);
+
+    cst->th.leaf_bytes = 0;
+    FOR(i, nrt) {
+        u32 x = u32le_get(cst->hashbuf + 4*i) & ~(u32)1;
+        x |= (i < nrl);
+        cst->th.sortkeys[i] = x;
+    }
+
+    /* FIXME sort buffer and put fixed-weight vector into Hbuf */
+
+    
+    
+}
+
