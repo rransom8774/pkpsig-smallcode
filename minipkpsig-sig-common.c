@@ -179,7 +179,7 @@ msv NS(th_hash)(tht *th, u8 *out, size_t outbytes) {
 }
 
 MAYBE_STATIC u16 NS(scs_mod_q)(const sigcommonstate *cst, u32 x) {
-    x += (cst->q_reduce_2_24 * (x>>24));
+    x = (x & 0xFFFFFFUL) + (cst->q_reduce_2_24 * (x>>24));
     return mod(cst->q_mod, x);
 }
 #define scs_mod_q NS(scs_mod_q)
