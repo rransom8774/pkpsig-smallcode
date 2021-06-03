@@ -16,6 +16,7 @@
 #include "minipkpsig-seclevels-auto.h"
 #include "minipkpsig-treehash-auto.h"
 #include "minipkpsig-sig-common.h"
+#include "minipkpsig-sig-thsort.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -266,10 +267,13 @@ msv NS(scs_expand_H1)(sigcommonstate *cst) {
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {cst->salt_and_msghash, 2*cst->ksl.cbytes},
+        {cst->th.params, TH_PARAM_BYTES},
         {cst->h_C1, cst->ssl.cbytes},
         {NULL, 0}
     };
     int i;
+
+    cst->th.params[2] = cst->ssl.cbytes;
 
     cst->xof(out, in);
 
@@ -286,13 +290,18 @@ msv NS(scs_expand_H2)(sigcommonstate *cst) {
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {cst->salt_and_msghash, 2*cst->ksl.cbytes},
+        {cst->th.params, TH_PARAM_BYTES},
         {cst->h_C1, cst->ssl.cbytes},
+        {cst->h_C2, cst->ssl.cbytes},
         {NULL, 0}
     };
     int i;
 
+    cst->th.params[2] = cst->ssl.cbytes;
+
     cst->xof(out, in);
 
+    cst->th.n_blocks = nrt;
     cst->th.leaf_bytes = 0;
     FOR(i, nrt) {
         u32 x = u32le_get(cst->hashbuf + 4*i) & ~(u32)1;
@@ -300,9 +309,11 @@ msv NS(scs_expand_H2)(sigcommonstate *cst) {
         cst->th.sortkeys[i] = x;
     }
 
-    /* FIXME sort buffer and put fixed-weight vector into Hbuf */
+    th_sort_keys_full(&(cst->th));
 
-    
-    
+    FOR(i, nrt) {
+        int x = cst->th.sortkeys[i] & 1;
+        cst->Hbuf[i] = (cst->Hbuf[i] & 0x7FFF) | (x << 15);
+    }
 }
 

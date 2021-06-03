@@ -37,7 +37,7 @@ minipkpsig-sym-shake256-xkcp.o: minipkpsig-sym-shake256-xkcp.c minipkpsig-symtyp
 minipkpsig-symalgs.o: minipkpsig-symalgs.c minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-common.h
 	cc -g -c -o $@ $<
 
-minipkpsig-sig-common.o: minipkpsig-sig-common.c minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h
+minipkpsig-sig-common.o: minipkpsig-sig-common.c minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h
 	cc -g -c -o $@ $<
 
 minipkpsig-sig-thsort.o: minipkpsig-sig-thsort.c minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h
