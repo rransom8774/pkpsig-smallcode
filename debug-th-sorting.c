@@ -19,6 +19,7 @@
 #include "minipkpsig-seclevels-auto.h"
 #include "minipkpsig-treehash-auto.h"
 #include "minipkpsig-sig-common.h"
+#include "minipkpsig-sig-thsort.h"
 #include "minipkpsig-sig-verify.h"
 #endif
 
