@@ -240,8 +240,8 @@ int main(int argc, char *argv[]) {
         if ((rv = test_th_sort_verifyC2_step(i)) != 0) break;
     }
 
-    test_th_sort_keys_full_setup(100);
-    FOR(i, 100) test_th_sort_keys_full_step(i, i*10);
+    test_th_sort_keys_full_setup(95);
+    FOR(i, 95) test_th_sort_keys_full_step(i, i*10);
 
     return (rv < 0);
 
