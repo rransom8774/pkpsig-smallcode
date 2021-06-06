@@ -124,6 +124,7 @@ msv NS(th_init)(tht *th, const pst *ps) {
     th->xof = symalgs[ps->sym].xof_chunked;
     th->prefix_bytes = ksl_cbytes * 2;
     th->degree = (136*4 - 16 - th->prefix_bytes) / ksl_cbytes;
+    th->next_node_index = 0;
     th->params[0] = th->degree;
     th->params[1] = th->node_bytes = ssl_cbytes;
     u16le_put(th->params + 3, nrs);
@@ -166,6 +167,16 @@ sv th_hash_level(tht *th) {
     th->next_node_index = node_index;
     th->node_bytes = out_node_bytes;
     th->n_blocks = idx_out;
+}
+
+msv NS(th_prehash)(tht *th, size_t outbytes) {
+    int real_degree = th->degree;
+    assert(outbytes <= th->node_bytes);
+    th->params[2] = outbytes;
+
+    th->degree = 1;
+    th_hash_level(th);
+    th->degree = real_degree;
 }
 
 msv NS(th_hash)(tht *th, u8 *out, size_t outbytes) {

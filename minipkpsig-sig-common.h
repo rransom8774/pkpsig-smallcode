@@ -46,8 +46,10 @@ typedef struct {
 } tht;
 
 msv NS(th_init)(tht *th, const pst *ps);
+msv NS(th_prehash)(tht *th, size_t outbytes);
 msv NS(th_hash)(tht *th, u8 *out, size_t outbytes);
 #define th_init NS(th_init)
+#define th_prehash NS(th_prehash)
 #define th_hash NS(th_hash)
 
 typedef struct {
