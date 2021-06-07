@@ -87,6 +87,7 @@ th_max_prefix_bytes = 0
 th_max_degree = 0
 max_n, max_m, max_A_cols = 0, 0, 0
 max_skbytes, max_pkbytes = 0, 0
+max_ksl_pbytes, max_ssl_pbytes = 0, 0
 max_ksl_cbytes, max_ssl_cbytes = 0, 0
 max_nrt = 0
 
@@ -149,7 +150,9 @@ for pdline in pset_def_lines:
     th_max_total_leaf_bytes = max(th_max_total_leaf_bytes,
         leaves_C1 * leaf_bytes_C1, leaves_C2 * leaf_bytes_C2)
     th_max_sort_blocks = max(th_max_sort_blocks, nrt*2)
-    ksl_cbytes = seclevels_dict[ksl][2]
+    ksl_pbytes, ksl_cbytes = seclevels_dict[ksl][1:]
+    max_ksl_pbytes = max(max_ksl_pbytes, ksl_pbytes)
+    max_ssl_pbytes = max(max_ssl_pbytes, ssl_pbytes)
     max_ksl_cbytes = max(max_ksl_cbytes, ksl_cbytes)
     max_ssl_cbytes = max(max_ssl_cbytes, ssl_cbytes)
     max_nrt = max(max_nrt, nrt)
@@ -198,6 +201,7 @@ with open("minipkpsig-paramsets-auto.h", "w") as f:
     f.write("#define PKPSIG_MAX_A_COLS %d\n" % max_A_cols)
     f.write("#define PKPSIG_MAX_SECRET_KEY_BYTES %d\n" % max_skbytes)
     f.write("#define PKPSIG_MAX_PUBLIC_KEY_BYTES %d\n" % max_pkbytes)
+    f.write("#define PKPSIG_MAX_KEY_PREIMAGE_BYTES %d\n" % max_ksl_pbytes)
     f.write("#define PKPSIG_MAX_KEY_CRHASH_BYTES %d\n" % max_ksl_cbytes)
     f.write("#define PKPSIG_MAX_SIG_CRHASH_BYTES %d\n" % max_ssl_cbytes)
     f.write("#define PKPSIG_MAX_N_RUNS_TOTAL %d\n" % max_nrt)
