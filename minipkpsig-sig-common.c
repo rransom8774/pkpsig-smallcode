@@ -224,6 +224,18 @@ msv NS(scs_init)(sigcommonstate *cst, const pst *ps) {
 }
 #define scs_init NS(scs_init)
 
+MAYBE_STATIC size_t NS(scs_get_sig_bytes)(const sigcommonstate *cst) {
+    size_t saltbytes = cst->ksl.cbytes;
+    size_t h_C1_bytes = cst->ssl.cbytes;
+    size_t h_C2_bytes = cst->ssl.cbytes;
+    size_t nrt = cst->ps.nrtx + 8*cst->ssl.pbytes;
+    size_t nrl = cst->ps.nrl, nrs = nrt - nrl;
+    size_t runbytes_short = cst->ksl.pbytes;
+    size_t runbytes_long = vc_nS(cst->vcz) + vc_nS(cst->vcrho);
+    return (saltbytes + h_C1_bytes + h_C2_bytes +
+            runbytes_short*nrs + runbytes_long*nrl);
+}
+
 MAYBE_STATIC size_t NS(scs_pksize)(sigcommonstate *cst) {
     return cst->pps.kf_base+1 + vc_nS(cst->vcpk);
 }
