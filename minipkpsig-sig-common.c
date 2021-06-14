@@ -283,6 +283,19 @@ msv NS(scs_mult_by_A)(sigcommonstate *cst, const u16 *z) {
     /* leaves result in multbuf[] */
 }
 
+msv NS(scs_hash_message)(sigcommonstate *cst, const u8 *msg, size_t len) {
+    const int ksl_cbytes = cst->ksl.cbytes;
+    u8 hashctx = HASHCTX_MESSAGEHASH;
+    NS(chunkt) out[1] = {{cst->salt_and_msghash + ksl_cbytes, ksl_cbytes}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {cst->salt_and_msghash, ksl_cbytes},
+        {msg, len},
+        {NULL, 0}
+    };
+    cst->xof(out, in);
+}
+
 msv NS(scs_expand_H1)(sigcommonstate *cst) {
     u16 nrt = cst->ssl.pbytes*8 + cst->ps.nrtx;
     u8 hashctx = HASHCTX_CHALLENGE1EXPAND;
