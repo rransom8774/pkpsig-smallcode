@@ -19,6 +19,8 @@
 #include "minipkpsig-sig-thsort.h"
 #include "minipkpsig-sig-verify.h"
 
+#include <string.h>
+
 #ifndef MINIPKPSIG_SINGLEFILE
 extern slt seclevels[];
 extern ppst pkp_paramsets[];
@@ -93,4 +95,24 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
     verifyC2_debug(th, nrs, mergelen_l2, chunkstart);
 }
 #define th_sort_verifyC2 NS(th_sort_verifyC2)
+
+MAYBE_STATIC int NS(svs_set_signature)(sigverifystate *vst, const u8 *sig, size_t len) {
+    const int ksl_cbytes = vst->cst.ksl.cbytes;
+    const int ksl_pbytes = vst->cst.ksl.pbytes;
+    const int ssl_cbytes = vst->cst.ssl.cbytes;
+    const int ssl_pbytes = vst->cst.ssl.pbytes;
+    const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8;
+    const int nrs = nrt - vst->cst.ps.nrl;
+
+    if (scs_get_sig_bytes(&(vst->cst)) != len) return -1;
+
+    memcpy(vst->cst.salt_and_msghash, sig, ksl_cbytes);
+    memcpy(vst->cst.h_C1, sig + ksl_cbytes, ssl_cbytes);
+    memcpy(vst->cst.h_C2, sig + ksl_cbytes + ssl_cbytes, ssl_cbytes);
+
+    vst->blindingseeds = sig + ksl_cbytes + ssl_cbytes*2;
+    vst->longproofs = vst->blindingseeds + ksl_pbytes*nrs;
+
+    return 0;
+}
 
