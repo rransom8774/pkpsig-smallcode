@@ -54,7 +54,7 @@ msv NS(th_hash)(tht *th, u8 *out, size_t outbytes);
 
 typedef struct {
     tht th;
-    vct vcpk, vcz, vcrho;
+    vct vcpk, vcz, vcsigma;
 
     u16 A[PKPSIG_MAX_A_COLS][PKPSIG_MAX_M];
     u16 v[PKPSIG_MAX_N], w[PKPSIG_MAX_M];
