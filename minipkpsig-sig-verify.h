@@ -13,6 +13,9 @@ typedef struct {
 
     const u8 *blindingseeds;
     const u8 *longproofs;
+
+    u16 z[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
+    u8 sigma[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
 } sigverifystate;
 
 msv NS(th_sort_verifyC1)(tht *th);
