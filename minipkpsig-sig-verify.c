@@ -110,7 +110,8 @@ MAYBE_STATIC int NS(svs_set_signature)(sigverifystate *vst, const u8 *sig, size_
     memcpy(vst->cst.h_C1, sig + ksl_cbytes, ssl_cbytes);
     memcpy(vst->cst.h_C2, sig + ksl_cbytes + ssl_cbytes, ssl_cbytes);
 
-    vst->blindingseeds = sig + ksl_cbytes + ssl_cbytes*2;
+    vst->coms = sig + ksl_cbytes + ssl_cbytes*2;
+    vst->blindingseeds = vst->coms + ssl_cbytes*nrt;
     vst->longproofs = vst->blindingseeds + ksl_pbytes*nrs;
 
     return 0;

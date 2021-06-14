@@ -11,6 +11,7 @@
 typedef struct {
     sigcommonstate cst;
 
+    const u8 *coms;
     const u8 *blindingseeds;
     const u8 *longproofs;
 
