@@ -211,6 +211,7 @@ msv NS(scs_init)(sigcommonstate *cst, const pst *ps) {
 
     mod_init(cst->q_mod, cst->pps.q);
     cst->q_reduce_2_24 = (1UL << 24) % (u32)cst->pps.q;
+    cst->q_uniform_bound = -(u32)scs_mod_q(cst, cst->q_reduce_2_24 * 256);
 
     th_init(&(cst->th), ps);
 
@@ -295,6 +296,70 @@ msv NS(scs_hash_message)(sigcommonstate *cst, const u8 *msg, size_t len) {
         {NULL, 0}
     };
     cst->xof(out, in);
+}
+
+MAYBE_STATIC int NS(scs_derive_vector)(sigcommonstate *cst, u16 *v, int gen) {
+    const int n = cst->pps.n;
+    int i, rv = 0;
+    FOR(i, n) v[i] = scs_mod_q(cst, cst->th.sortkeys[i]);
+    if (gen) FOR(i, n) {
+        rv |= (cst->th.sortkeys[i] > cst->q_uniform_bound);
+    }
+    return -rv;
+}
+
+MAYBE_STATIC int NS(scs_derive_permutation)(sigcommonstate *cst, u8 *perm, int gen) {
+    const int n = cst->pps.n;
+    int i, rv = 0;
+    FOR(i, n) {
+        cst->th.sortkeys[i] &= PERMSAMPLER_RANDOM_MASK;
+        cst->th.sortkeys[i] |= (i & PERMSAMPLER_INDEX_MASK);
+    }
+    th_sort_keys_full(&(cst->th));
+    FOR(i, n) perm[i] = cst->th.sortkeys[i] & PERMSAMPLER_INDEX_MASK;
+    if (gen) FOR(i, n-1) {
+        rv |= ((cst->th.sortkeys[i] & PERMSAMPLER_RANDOM_MASK) ==
+               (cst->th.sortkeys[i+1] & PERMSAMPLER_RANDOM_MASK));
+    }
+    return -rv;
+}
+
+MAYBE_STATIC int NS(scs_expand_blindingseed)(sigcommonstate *cst, u16 *r_sigma, u8 *pi_sigma_inv, u8 *com0, const u8 *bseed, u32 runidx, int gen) {
+    const int ksl_cbytes = cst->ksl.cbytes;
+    const int ssl_cbytes = cst->ssl.cbytes;
+    const int n = cst->pps.n;
+    int i, rv = 0;
+    u8 hashctx = HASHCTX_EXPANDBLINDINGSEED;
+    u8 runidxbuf[4];
+    NS(chunkt) out[1] = {{NULL, 0}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {cst->salt_and_msghash, ksl_cbytes*2},
+        {runidxbuf, 4},
+        {NULL, 0}
+    };
+
+    u32le_put(runidxbuf, HASHIDX_EXPANDBLINDINGSEED_RUN_INDEX_FACTOR*runidx +
+              HASHIDX_EXPANDBLINDINGSEED_COMMITMENT);
+    out->p = com0;
+    out->bytes = ssl_cbytes;
+    cst->xof(out, in);
+
+    u32le_put(runidxbuf, HASHIDX_EXPANDBLINDINGSEED_RUN_INDEX_FACTOR*runidx +
+              HASHIDX_EXPANDBLINDINGSEED_PI_SIGMA_INV);
+    out->p = cst->hashbuf;
+    out->bytes = n * 4;
+    cst->xof(out, in);
+    FOR(i, n) cst->th.sortkeys[i] = u32le_get(out->p + 4*i);
+    rv |= scs_derive_permutation(cst, pi_sigma_inv, gen);
+
+    u32le_put(runidxbuf, HASHIDX_EXPANDBLINDINGSEED_RUN_INDEX_FACTOR*runidx +
+              HASHIDX_EXPANDBLINDINGSEED_R_SIGMA);
+    cst->xof(out, in);
+    FOR(i, n) cst->th.sortkeys[i] = u32le_get(out->p + 4*i);
+    rv |= scs_derive_vector(cst, r_sigma, gen);
+
+    return rv;
 }
 
 msv NS(scs_expand_H1)(sigcommonstate *cst) {

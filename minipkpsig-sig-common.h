@@ -8,6 +8,9 @@
  * WARRANTY WHATSOEVER.
  */
 
+#define PERMSAMPLER_RANDOM_MASK 0xFFFFFF80
+#define PERMSAMPLER_INDEX_MASK  0x0000007F
+
 #define HASHCTX_PUBPARAMS 0
 #define HASHCTX_SECKEYSEEDEXPAND 1
 #define HASHCTX_SECKEYCHECKSUM 2
@@ -22,6 +25,13 @@
 #define HASHCTX_INTERNAL_GENMSGHASHSALT 0x80
 #define HASHCTX_INTERNAL_GENBLINDINGSEEDGENSEED 0x81
 #define HASHCTX_INTERNAL_GENBLINDINGSEED 0x82
+
+#define HASHIDX_SECKEYSEEDEXPAND_PI_INV 0
+
+#define HASHIDX_EXPANDBLINDINGSEED_RUN_INDEX_FACTOR 256
+#define HASHIDX_EXPANDBLINDINGSEED_COMMITMENT 0
+#define HASHIDX_EXPANDBLINDINGSEED_PI_SIGMA_INV 1
+#define HASHIDX_EXPANDBLINDINGSEED_R_SIGMA 2
 
 #define TH_PARAM_BYTES 7
 
@@ -61,6 +71,7 @@ typedef struct {
     u32 multbuf[PKPSIG_MAX_M];
     u16 Hbuf[PKPSIG_MAX_N_RUNS_TOTAL];
 
+    u32 q_uniform_bound;
     modt q_mod;
     u16 q_reduce_2_24;
     pst ps;
@@ -82,6 +93,9 @@ MAYBE_STATIC size_t NS(scs_pksize)(sigcommonstate *cst);
 msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes);
 msv NS(scs_mult_by_A)(sigcommonstate *cst, const u16 *z);
 msv NS(scs_hash_message)(sigcommonstate *cst, const u8 *msg, size_t len);
+MAYBE_STATIC int NS(scs_derive_vector)(sigcommonstate *cst, u16 *v, int gen);
+MAYBE_STATIC int NS(scs_derive_permutation)(sigcommonstate *cst, u8 *perm, int gen);
+MAYBE_STATIC int NS(scs_expand_blindingseed)(sigcommonstate *cst, u16 *r_sigma, u8 *pi_sigma_inv, u8 *com0, const u8 *bseed, u32 runidx, int gen);
 msv NS(scs_expand_H1)(sigcommonstate *cst);
 msv NS(scs_expand_H2)(sigcommonstate *cst);
 #define scs_mod_q NS(scs_mod_q)
@@ -91,6 +105,9 @@ msv NS(scs_expand_H2)(sigcommonstate *cst);
 #define scs_expand_pk NS(scs_expand_pk)
 #define scs_mult_by_A NS(scs_mult_by_A)
 #define scs_hash_message NS(scs_hash_message)
+#define scs_derive_vector NS(scs_derive_vector)
+#define scs_derive_permutation NS(scs_derive_permutation)
+#define scs_expand_blindingseed NS(scs_expand_blindingseed)
 #define scs_expand_H1 NS(scs_expand_H1)
 #define scs_expand_H2 NS(scs_expand_H2)
 
