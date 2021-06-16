@@ -89,7 +89,7 @@ max_n, max_m, max_A_cols = 0, 0, 0
 max_skbytes, max_pkbytes = 0, 0
 max_ksl_pbytes, max_ssl_pbytes = 0, 0
 max_ksl_cbytes, max_ssl_cbytes = 0, 0
-max_nrt = 0
+max_nrt, max_nrl = 0, 0
 
 def encode_bytes(M):
     M2 = list()
@@ -156,6 +156,7 @@ for pdline in pset_def_lines:
     max_ksl_cbytes = max(max_ksl_cbytes, ksl_cbytes)
     max_ssl_cbytes = max(max_ssl_cbytes, ssl_cbytes)
     max_nrt = max(max_nrt, nrt)
+    max_nrl = max(max_nrl, nrl)
     th_max_prefix_bytes = 2 * ksl_cbytes
     th_degree = (136*4 - 16 - 2*ksl_cbytes) / ssl_cbytes
     th_max_degree = max(th_max_degree, th_degree)
@@ -205,6 +206,7 @@ with open("minipkpsig-paramsets-auto.h", "w") as f:
     f.write("#define PKPSIG_MAX_KEY_CRHASH_BYTES %d\n" % max_ksl_cbytes)
     f.write("#define PKPSIG_MAX_SIG_CRHASH_BYTES %d\n" % max_ssl_cbytes)
     f.write("#define PKPSIG_MAX_N_RUNS_TOTAL %d\n" % max_nrt)
+    f.write("#define PKPSIG_MAX_N_RUNS_LONG %d\n" % max_nrl)
     f.write("#define N_PKP_PARAMSETS %d\n" % len(pkp_paramsets))
     f.write("#define N_PARAMSETS %d\n" % len(paramsets))
     pass
