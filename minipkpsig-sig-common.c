@@ -315,6 +315,7 @@ MAYBE_STATIC int NS(scs_derive_permutation)(sigcommonstate *cst, u8 *perm, int g
         cst->th.sortkeys[i] &= PERMSAMPLER_RANDOM_MASK;
         cst->th.sortkeys[i] |= (i & PERMSAMPLER_INDEX_MASK);
     }
+    cst->th.n_blocks = n;
     th_sort_keys_full(&(cst->th));
     FOR(i, n) perm[i] = cst->th.sortkeys[i] & PERMSAMPLER_INDEX_MASK;
     if (gen) FOR(i, n-1) {
