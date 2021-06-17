@@ -230,12 +230,12 @@ msv NS(svs_recover_commitments_short)(sigverifystate *vst) {
     u8 pi_sigma_inv[PKPSIG_MAX_N];
 
     FOR(i, nrs) {
+        u32 alpha = (vst->Hbuf_reordered[i] & 0x7FFF);
         scs_expand_blindingseed(&(vst->cst), r_sigma, pi_sigma_inv,
                 vst->coms_recovered[i], vst->blindingseeds + i*ssl_cbytes,
                 vst->run_indexes[i], 0);
         svs_apply_perm_inv(vst, vst->z[i], vst->cst.v, pi_sigma_inv);
         FOR(j, n) {
-            u32 alpha = (vst->Hbuf_reordered[i] & 0x7FFF);
             u32 zj = r_sigma[j] + vst->z[i][j]*alpha;
             vst->z[i][j] = scs_mod_q(&(vst->cst), zj);
         }
