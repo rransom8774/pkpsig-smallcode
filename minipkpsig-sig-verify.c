@@ -252,6 +252,7 @@ MAYBE_STATIC int NS(svs_verify_C2)(sigverifystate *vst) {
     size_t zbytes = vst->cst.th.leaf_bytes = n*2;
 
     vst->cst.th.n_blocks = nrt;
+    vst->cst.th.hashctx = HASHCTX_CHALLENGE2HASH;
 
     /* copy z into th.leaves */
     FOR(i, nrt) FOR(j, n) {
@@ -279,7 +280,10 @@ MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst) {
     const int n = vst->cst.pps.n, m = vst->cst.pps.m;
     int i, j;
 
+    vst->cst.th.hashctx = HASHCTX_CHALLENGE1HASH;
+
     /* reorder coms_recovered according to run_indexes */
+    vst->cst.th.n_blocks = nrt;
     FOR(i, nrt) {
         vst->cst.th.sortkeys[i] = vst->run_indexes[i];
         memcpy(vst->cst.th.leaves + ssl_cbytes*i,
