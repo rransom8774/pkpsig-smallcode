@@ -136,23 +136,6 @@ MAYBE_STATIC int NS(svs_set_signature)(sigverifystate *vst, const u8 *sig, size_
     return 0;
 }
 
-msv NS(svs_unpack_long_proofs)(sigverifystate *vst) {
-    size_t nS_z = vc_nS(vst->cst.vcz), nS_sigma = vc_nS(vst->cst.vcsigma),
-        nS = nS_z + nS_sigma;
-    const int ssl_pbytes = vst->cst.ssl.pbytes;
-    const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
-        nrl = vst->cst.ps.nrl, nrs = nrt - nrl;
-    const int n = vst->cst.pps.n;
-    int i, j;
-    u16 sigma_buf[PKPSIG_MAX_N];
-
-    FOR(i, nrl) {
-        vc_decode(vst->cst.vcz, vst->z[i+nrs], vst->longproofs + i*nS);
-        vc_decode(vst->cst.vcsigma, sigma_buf, vst->longproofs + i*nS + nS_z);
-        FOR(j, n) vst->sigma[i][j] = sigma_buf[j];
-    }
-}
-
 msv NS(svs_recover_run_indexes)(sigverifystate *vst) {
     const int ksl_pbytes = vst->cst.ksl.pbytes;
     const int ssl_cbytes = vst->cst.ssl.cbytes;
@@ -185,6 +168,55 @@ msv NS(svs_apply_perm_inv)(sigverifystate *vst, u16 *v_sigma_inv, const u16 *v, 
     FOR(i, n) v_sigma_inv[i] = vst->cst.th.sortkeys[i] & 0xFFFF;
 }
 
+msv NS(svs_unpack_long_proofs)(sigverifystate *vst) {
+    size_t nS_z = vc_nS(vst->cst.vcz), nS_sigma = vc_nS(vst->cst.vcsigma),
+        nS = nS_z + nS_sigma;
+    const int ksl_cbytes = vst->cst.ksl.cbytes;
+    const int ksl_pbytes = vst->cst.ksl.pbytes;
+    const int ssl_cbytes = vst->cst.ssl.cbytes;
+    const int ssl_pbytes = vst->cst.ssl.pbytes;
+    const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
+        nrl = vst->cst.ps.nrl, nrs = nrt - nrl;
+    const int n = vst->cst.pps.n, m = vst->cst.pps.m;
+    int i, j;
+    u16 sigma_buf[PKPSIG_MAX_N];
+    u16 z_sigma_inv[PKPSIG_MAX_N];
+    u8 sigma[PKPSIG_MAX_N];
+    u8 hashctx = HASHCTX_COMMITMENT;
+    u8 runidxbuf[4];
+    NS(chunkt) out[1] = {{NULL, ssl_cbytes}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {vst->cst.salt_and_msghash, ksl_cbytes*2},
+        {runidxbuf, 4},
+        {sigma, n},
+        {vst->cst.hashbuf, m*2},
+        {NULL, 0}
+    };
+
+    FOR(i, nrl) {
+        u32 alpha = (vst->Hbuf_reordered[i] & 0x7FFF);
+        u32 neg_alpha = vst->cst.pps.q - alpha;
+
+        vc_decode(vst->cst.vcz, vst->z[i+nrs], vst->longproofs + i*nS);
+        vc_decode(vst->cst.vcsigma, sigma_buf, vst->longproofs + i*nS + nS_z);
+        FOR(j, n) sigma[j] = sigma_buf[j];
+
+        u32le_put(runidxbuf, vst->run_indexes[i+nrs]);
+
+        svs_apply_perm_inv(vst, z_sigma_inv, vst->z[i+nrs], sigma);
+        scs_mult_by_A(&(vst->cst), z_sigma_inv);
+        FOR(j, m) {
+            u32 Ar_j = vst->cst.multbuf[j] + neg_alpha*vst->cst.w[j];
+            Ar_j = scs_mod_q(&(vst->cst), Ar_j);
+            u16le_put(vst->cst.hashbuf + 2*j, Ar_j);
+        }
+
+        out->p = vst->coms_recovered[i+nrs];
+        vst->cst.xof(out, in);
+    }
+}
+
 msv NS(svs_recover_commitments_short)(sigverifystate *vst) {
     const int ksl_cbytes = vst->cst.ksl.cbytes;
     const int ksl_pbytes = vst->cst.ksl.pbytes;
@@ -207,48 +239,6 @@ msv NS(svs_recover_commitments_short)(sigverifystate *vst) {
             u32 zj = r_sigma[j] + vst->z[i][j]*alpha;
             vst->z[i][j] = scs_mod_q(&(vst->cst), zj);
         }
-    }
-}
-
-msv NS(svs_recover_commitments_long)(sigverifystate *vst) {
-    const int ksl_cbytes = vst->cst.ksl.cbytes;
-    const int ksl_pbytes = vst->cst.ksl.pbytes;
-    const int ssl_cbytes = vst->cst.ssl.cbytes;
-    const int ssl_pbytes = vst->cst.ssl.pbytes;
-    const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
-        nrl = vst->cst.ps.nrl, nrs = nrt - nrl;
-    const int n = vst->cst.pps.n, m = vst->cst.pps.m;
-    int i, j;
-    u16 z_sigma_inv[PKPSIG_MAX_N];
-    u8 hashctx = HASHCTX_COMMITMENT;
-    u8 runidxbuf[4];
-    NS(chunkt) out[1] = {{NULL, ssl_cbytes}};
-    NS(chunkt) in[] = {
-        {&hashctx, 1},
-        {vst->cst.salt_and_msghash, ksl_cbytes*2},
-        {runidxbuf, 4},
-        {NULL, n},
-        {vst->cst.hashbuf, m*2},
-        {NULL, 0}
-    };
-
-    FOR(i, nrl) {
-        u32 alpha = (vst->Hbuf_reordered[i] & 0x7FFF);
-        u32 neg_alpha = vst->cst.pps.q - alpha;
-
-        u32le_put(runidxbuf, vst->run_indexes[i+nrs]);
-        in[3].p = vst->sigma[i];
-
-        svs_apply_perm_inv(vst, z_sigma_inv, vst->z[i+nrs], vst->sigma[i]);
-        scs_mult_by_A(&(vst->cst), z_sigma_inv);
-        FOR(j, m) {
-            u32 Ar_j = vst->cst.multbuf[j] + neg_alpha*vst->cst.w[j];
-            Ar_j = scs_mod_q(&(vst->cst), Ar_j);
-            u16le_put(vst->cst.hashbuf + 2*j, Ar_j);
-        }
-
-        out->p = vst->coms_recovered[i+nrs];
-        vst->cst.xof(out, in);
     }
 }
 
@@ -328,10 +318,9 @@ MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, size_t sigle
     scs_hash_message(cst, msg, msglen);
     scs_expand_H1(cst);
     scs_expand_H2(cst);
-    svs_unpack_long_proofs(vst);
     svs_recover_run_indexes(vst);
+    svs_unpack_long_proofs(vst);
     svs_recover_commitments_short(vst);
-    svs_recover_commitments_long(vst);
     rv |= svs_verify_C2(vst);
     rv |= svs_verify_C1(vst);
 
