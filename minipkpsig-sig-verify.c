@@ -168,7 +168,7 @@ msv NS(svs_apply_perm_inv)(sigverifystate *vst, u16 *v_sigma_inv, const u16 *v, 
     FOR(i, n) v_sigma_inv[i] = vst->cst.th.sortkeys[i] & 0xFFFF;
 }
 
-msv NS(svs_unpack_long_proofs)(sigverifystate *vst) {
+msv NS(svs_process_long_proofs)(sigverifystate *vst) {
     size_t nS_z = vc_nS(vst->cst.vcz), nS_sigma = vc_nS(vst->cst.vcsigma),
         nS = nS_z + nS_sigma;
     const int ksl_cbytes = vst->cst.ksl.cbytes;
@@ -319,7 +319,7 @@ MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, size_t sigle
     scs_expand_H1(cst);
     scs_expand_H2(cst);
     svs_recover_run_indexes(vst);
-    svs_unpack_long_proofs(vst);
+    svs_process_long_proofs(vst);
     svs_recover_commitments_short(vst);
     rv |= svs_verify_C2(vst);
     rv |= svs_verify_C1(vst);

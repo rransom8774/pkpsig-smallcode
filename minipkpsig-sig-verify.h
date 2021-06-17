@@ -34,7 +34,7 @@ msv NS(svs_init)(sigverifystate *vst, const pst *ps);
 MAYBE_STATIC int NS(svs_set_signature)(sigverifystate *vst, const u8 *sig, size_t len);
 msv NS(svs_recover_run_indexes)(sigverifystate *vst);
 msv NS(svs_apply_perm_inv)(sigverifystate *vst, u16 *v_sigma_inv, const u16 *v, const u8 *sigma);
-msv NS(svs_unpack_long_proofs)(sigverifystate *vst);
+msv NS(svs_process_long_proofs)(sigverifystate *vst);
 msv NS(svs_recover_commitments_short)(sigverifystate *vst);
 MAYBE_STATIC int NS(svs_verify_C2)(sigverifystate *vst);
 MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst);
@@ -43,7 +43,7 @@ MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, size_t sigle
 #define svs_set_signature NS(svs_set_signature)
 #define svs_recover_run_indexes NS(svs_recover_run_indexes)
 #define svs_apply_perm_inv NS(svs_apply_perm_inv)
-#define svs_unpack_long_proofs NS(svs_unpack_long_proofs)
+#define svs_process_long_proofs NS(svs_process_long_proofs)
 #define svs_recover_commitments_short NS(svs_recover_commitments_short)
 #define svs_verify_C2 NS(svs_verify_C2)
 #define svs_verify_C1 NS(svs_verify_C1)
