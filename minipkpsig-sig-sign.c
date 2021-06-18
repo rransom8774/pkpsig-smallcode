@@ -258,7 +258,7 @@ msv NS(sst_zkp_pass1)(signstate *sst) {
             ssl_cbytes);
         memcpy(sst->cst.th.leaves + ssl_cbytes*(2*i+1), sst->coms[i][1],
             ssl_cbytes);
-        th_hash(&(sst->cst.th), sst->cst.h_C1, ssl_cbytes);
     }
+    th_hash(&(sst->cst.th), sst->cst.h_C1, ssl_cbytes);
 }
 
