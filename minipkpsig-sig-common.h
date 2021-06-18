@@ -62,6 +62,9 @@ msv NS(th_hash)(tht *th, u8 *out, size_t outbytes);
 #define th_prehash NS(th_prehash)
 #define th_hash NS(th_hash)
 
+MAYBE_STATIC int NS(memverify_ct)(const u8 *x, const u8 *y, size_t len);
+#define memverify_ct NS(memverify_ct)
+
 typedef struct {
     tht th;
     vct vcpk, vcz, vcsigma;

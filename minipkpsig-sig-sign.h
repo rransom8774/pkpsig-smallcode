@@ -24,7 +24,13 @@ typedef struct {
 } signstate;
 
 msv NS(sst_init)(signstate *sst, const pst *ps);
+msv NS(sst_erase)(signstate *sst);
 MAYBE_STATIC size_t NS(sst_sksize)(signstate *sst);
+msv NS(sst_expand_secret_key)(signstate *sst);
+msv NS(sst_checksum_seckey)(signstate *sst);
 #define sst_init NS(sst_init)
+#define sst_erase NS(sst_erase)
 #define sst_sksize NS(sst_sksize)
+#define sst_expand_secret_key NS(sst_expand_secret_key)
+#define sst_checksum_seckey NS(sst_checksum_seckey)
 

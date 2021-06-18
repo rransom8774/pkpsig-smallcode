@@ -33,18 +33,75 @@ msv NS(sst_init)(signstate *sst, const pst *ps) {
     scs_init(&(sst->cst), ps);
 }
 
+msv NS(sst_erase)(signstate *sst) {
+    pst ps = sst->cst.ps;
+    sst_init(sst, &ps);
+}
+
 MAYBE_STATIC size_t NS(sst_sksize)(signstate *sst) {
     size_t kf_base = sst->cst.pps.kf_base;
     return 1 + 5*kf_base + (kf_base+1)/2;
 }
 
-MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen) {
+msv NS(sst_expand_secret_key)(signstate *sst) {
     const int kf_base = sst->cst.pps.kf_base,
         n = sst->cst.pps.n, m = sst->cst.pps.m;
     int i;
     u8 hashctx = HASHCTX_SECKEYSEEDEXPAND;
     u8 indexbuf[4];
-    NS(chunkt) out[1] = {{sst->cst.hashbuf, n*4}};     
+    NS(chunkt) out[1] = {{sst->cst.hashbuf, n*4}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {sst->cst.pkbytes, kf_base + 1},
+        {sst->seckeyseed, 2*kf_base},
+        {indexbuf, 4},
+        {NULL, 0}
+    };
+
+    /* recover pi_inv and w */
+    u32le_put(indexbuf, HASHIDX_SECKEYSEEDEXPAND_PI_INV);
+    sst->cst.xof(out, in);
+    FOR(i, n) sst->cst.th.sortkeys[i] = u32le_get(out->p + 4*i);
+    scs_derive_permutation(&(sst->cst), sst->pi_inv, 0);
+
+    scs_apply_perm_inv(&(sst->cst), sst->v_pi, sst->cst.v, sst->pi_inv);
+    scs_mult_by_A(&(sst->cst), sst->v_pi);
+    memset(sst->v_pi, 0, sizeof(sst->v_pi));
+
+    /* encode w into pkbytes */
+    FOR(i, m) sst->cst.w[i] = sst->cst.multbuf[i];
+    vc_encode(sst->cst.vcpk, sst->cst.pkbytes + kf_base+1, sst->cst.w);
+    FOR(i, m) sst->cst.w[i] = sst->cst.multbuf[i];
+}
+
+msv NS(sst_checksum_seckey)(signstate *sst) {
+    const int kf_base = sst->cst.pps.kf_base,
+        cksum_bytes = (kf_base + 1)/2;
+    int i;
+    u8 hashctx = HASHCTX_SECKEYCHECKSUM;
+    u8 cksum_params[2] = {
+        sst->cst.ksl.pbytes,
+        sst->cst.ksl.cbytes
+    };
+    NS(chunkt) out[1] = {{sst->cst.hashbuf, cksum_bytes}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {cksum_params, 2},
+        {sst->cst.pkbytes, scs_pksize(&(sst->cst))},
+        {NULL, 0}
+    };
+
+    sst->cst.xof(out, in);
+}
+
+MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen) {
+    const int kf_base = sst->cst.pps.kf_base,
+        cksum_bytes = (kf_base + 1)/2,
+        n = sst->cst.pps.n, m = sst->cst.pps.m;
+    int i, rv;
+    u8 hashctx = HASHCTX_SECKEYSEEDEXPAND;
+    u8 indexbuf[4];
+    NS(chunkt) out[1] = {{sst->cst.hashbuf, n*4}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {sst->cst.pkbytes, kf_base + 1},
@@ -60,27 +117,24 @@ MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen) {
     /* expand A and v */
     scs_expand_pk(&(sst->cst), sst->cst.pkbytes);
 
-    /* recover pi_inv and w */
-    u32le_put(indexbuf, HASHIDX_SECKEYSEEDEXPAND_PI_INV);
-    FOR(i, n) sst->cst.th.sortkeys[i] = u32le_get(out->p + 4*i);
-    scs_derive_permutation(&(sst->cst), sst->pi_inv, 0);
+    /* recover pi_inv, w, and the rest of pkbytes */
+    sst_expand_secret_key(sst);
 
-    scs_apply_perm_inv(&(sst->cst), sst->v_pi, sst->cst.v, sst->pi_inv);
-    scs_mult_by_A(&(sst->cst), sst->v_pi);
-    memset(sst->v_pi, 0, sizeof(sst->v_pi));
+    /* recompute checksum; check it unless generating a new key */
+    sst_checksum_seckey(sst);
+    if (gen) {
+        memcpy(sst->seckeychecksum, sst->cst.hashbuf, cksum_bytes);
+        rv = 0;
+    } else {
+        rv = memverify_ct(sst->seckeychecksum, sst->cst.hashbuf, cksum_bytes);
+    }
 
-    /* encode w into pkbytes */
-    FOR(i, m) sst->cst.w[i] = sst->cst.multbuf[i];
-    vc_encode(sst->cst.vcpk, sst->cst.pkbytes + kf_base+1, sst->cst.w);
-    FOR(i, m) sst->cst.w[i] = sst->cst.multbuf[i];
+    /* clobber secret key if checksum does not match */
+    if (rv != 0) {
+        sst_erase(sst);
+    }
 
-    /* FIXME recompute checksum; check it unless generating a new key */
-    
-    
-
-    /* FIXME clobber secret key if checksum does not match */
-    
-    
+    return rv;
 }
 
 msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len) {

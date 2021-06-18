@@ -27,9 +27,6 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps);
 #define th_sort_verifyC1 NS(th_sort_verifyC1)
 #define th_sort_verifyC2 NS(th_sort_verifyC2)
 
-MAYBE_STATIC int NS(memverify_ct)(const u8 *x, const u8 *y, size_t len);
-#define memverify_ct NS(memverify_ct)
-
 msv NS(svs_init)(sigverifystate *vst, const pst *ps);
 MAYBE_STATIC int NS(svs_set_signature)(sigverifystate *vst, const u8 *sig, size_t len);
 msv NS(svs_recover_run_indexes)(sigverifystate *vst);

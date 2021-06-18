@@ -96,20 +96,6 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
 }
 #define th_sort_verifyC2 NS(th_sort_verifyC2)
 
-/* copied from https://gist.github.com/sneves/10845247;
- * author Samuel Neves, license CC0 */
-static int ct_isnonzero_u32(uint32_t x)
-{
-    return (x|-x)>>31;
-}
-
-MAYBE_STATIC int NS(memverify_ct)(const u8 *x, const u8 *y, size_t len) {
-    size_t i;
-    u8 acc = 0;
-    FOR(i, len) acc |= (x[i] ^ y[i]);
-    return -ct_isnonzero_u32(acc);
-}
-
 msv NS(svs_init)(sigverifystate *vst, const pst *ps) {
     memset(vst, 0, sizeof(*vst));
     scs_init(&(vst->cst), ps);
