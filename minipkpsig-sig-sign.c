@@ -60,17 +60,19 @@ MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen) {
     /* expand A and v */
     scs_expand_pk(&(sst->cst), sst->cst.pkbytes);
 
-    /* FIXME recover pi_inv and w */
+    /* recover pi_inv and w */
     u32le_put(indexbuf, HASHIDX_SECKEYSEEDEXPAND_PI_INV);
     FOR(i, n) sst->cst.th.sortkeys[i] = u32le_get(out->p + 4*i);
     scs_derive_permutation(&(sst->cst), sst->pi_inv, 0);
-    
-    
-    
 
-    /* FIXME encode w into pkbytes */
-    
-    
+    scs_apply_perm_inv(&(sst->cst), sst->v_pi, sst->cst.v, sst->pi_inv);
+    scs_mult_by_A(&(sst->cst), sst->v_pi);
+    memset(sst->v_pi, 0, sizeof(sst->v_pi));
+
+    /* encode w into pkbytes */
+    FOR(i, m) sst->cst.w[i] = sst->cst.multbuf[i];
+    vc_encode(sst->cst.vcpk, sst->cst.pkbytes + kf_base+1, sst->cst.w);
+    FOR(i, m) sst->cst.w[i] = sst->cst.multbuf[i];
 
     /* FIXME recompute checksum; check it unless generating a new key */
     

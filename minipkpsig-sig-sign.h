@@ -16,6 +16,7 @@ typedef struct {
     u8 seckeychecksum[(PKPSIG_MAX_KF_BASE+1)/2];
 
     u8 pi_inv[PKPSIG_MAX_N];
+    u16 v_pi[PKPSIG_MAX_N];
 
     u8 blindingseeds[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_KEY_PREIMAGE_BYTES];
     u16 z[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
