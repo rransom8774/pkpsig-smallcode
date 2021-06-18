@@ -138,8 +138,19 @@ MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen) {
 }
 
 msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len) {
-    
-    
-    
+    const int kf_base = sst->cst.pps.kf_base,
+        ksl_cbytes = sst->cst.ksl.cbytes;
+    u8 hashctx = HASHCTX_INTERNAL_GENMSGHASHSALT;
+    NS(chunkt) out[1] = {{sst->cst.salt_and_msghash, ksl_cbytes}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {msg, len},
+        {sst->saltgenseed, kf_base*2},
+        {NULL, 0}
+    };
+
+    sst->cst.xof(out, in);
+
+    return scs_hash_message(&(sst->cst), msg, len);
 }
 
