@@ -18,7 +18,17 @@ typedef struct {
     u8 pi_inv[PKPSIG_MAX_N];
     u16 v_pi[PKPSIG_MAX_N];
 
+    u8 bsgs[PKPSIG_MAX_KF_BASE*4];
+    u8 bsg_buf[PKPSIG_MAX_KF_BASE*4 + PKPSIG_MAX_KEY_PREIMAGE_BYTES];
+    u16 r_sigma[PKPSIG_MAX_N];
+    u16 r[PKPSIG_MAX_N];
+    u16 v_pi_sigma[PKPSIG_MAX_N];
+    u8 pi_sigma_inv[PKPSIG_MAX_N];
+    u8 sigma[PKPSIG_MAX_N];
+    u8 Ar_buf[PKPSIG_MAX_N*2];
+
     u8 blindingseeds[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_KEY_PREIMAGE_BYTES];
+    u8 coms[PKPSIG_MAX_N_RUNS_TOTAL][2][PKPSIG_MAX_SIG_CRHASH_BYTES];
     u16 z[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
     u8 sigma[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
 } signstate;
@@ -30,6 +40,8 @@ msv NS(sst_expand_secret_key)(signstate *sst);
 msv NS(sst_checksum_seckey)(signstate *sst);
 MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen);
 msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len);
+msv NS(sst_apply_compose_perm_inv)(signstate *sst, u16 *v_sigma, u8 *pi_sigma, const u16 *v, const u8 *pi, const u8 *sigma_inv);
+msv NS(sst_zkp_pass1)(signstate *sst);
 #define sst_init NS(sst_init)
 #define sst_erase NS(sst_erase)
 #define sst_sksize NS(sst_sksize)
@@ -37,4 +49,6 @@ msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len);
 #define sst_checksum_seckey NS(sst_checksum_seckey)
 #define sst_set_secret_key NS(sst_set_secret_key)
 #define sst_hash_message NS(sst_hash_message)
+#define sst_apply_compose_perm_inv NS(sst_apply_compose_perm_inv)
+#define sst_zkp_pass1 NS(sst_zkp_pass1)
 

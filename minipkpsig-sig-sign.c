@@ -154,3 +154,111 @@ msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len) {
     return scs_hash_message(&(sst->cst), msg, len);
 }
 
+msv NS(sst_apply_compose_perm_inv)(signstate *sst, u16 *v_sigma, u8 *pi_sigma, const u16 *v, const u8 *pi, const u8 *sigma_inv) {
+    const int n = sst->cst.pps.n;
+    int i;
+    sst->cst.th.n_blocks = n;
+    FOR(i, n) {
+        u32 si = sigma_inv[i], p = pi[i], vi = v[i];
+        sst->cst.th.sortkeys[i] = (si << 24) | (vi << 8) | p;
+    }
+    th_sort_keys_full(&(sst->cst.th));
+    FOR(i, n) {
+        u32 ski = sst->cst.th.sortkeys[i];
+        v_sigma[i] = (ski >> 8) & 0xFFFF;
+        pi_sigma[i] = ski & 0xFF;
+    }
+}
+
+sv NS(sst_gen_blinding_seed_gen_seed)(signstate *sst) {
+    const int kf_base = sst->cst.pps.kf_base, bsgs_bytes = 4*kf_base;
+    const int ksl_cbytes = sst->cst.ksl.cbytes;
+    u8 hashctx = HASHCTX_INTERNAL_GENBLINDINGSEEDGENSEED;
+    NS(chunkt) out[1] = {{sst->bsgs, bsgs_bytes}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {sst->cst.pkbytes, kf_base + 1},
+        {sst->seckeyseed, 2*kf_base},
+        {sst->cst.salt_and_msghash, 2*ksl_cbytes},
+        {NULL, 0}
+    };
+
+    sst->cst.xof(out, in);
+}
+
+sv NS(sst_gen_com1)(signstate *sst, int i) {
+    const int ksl_cbytes = sst->cst.ksl.cbytes;
+    const int ssl_cbytes = sst->cst.ssl.cbytes;
+    const int n = sst->cst.pps.n;
+    u8 hashctx = HASHCTX_COMMITMENT;
+    u8 indexbuf[4];
+    NS(chunkt) out[1] = {{sst->coms[i][1], ssl_cbytes}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {sst->cst.salt_and_msghash, ksl_cbytes*2},
+        {indexbuf, 4},
+        {sst->sigma, n},
+        {sst->Ar_buf, n*2},
+        {NULL, 0}
+    };
+
+    u32le_put(indexbuf, i);
+    sst->cst.xof(out, in);
+}
+
+msv NS(sst_zkp_pass1)(signstate *sst) {
+    const int kf_base = sst->cst.pps.kf_base, bsgs_bytes = 4*kf_base;
+    const int ksl_pbytes = sst->cst.ksl.pbytes;
+    const int ssl_cbytes = sst->cst.ssl.cbytes;
+    const int ssl_pbytes = sst->cst.ssl.pbytes;
+    const int nrt = sst->cst.ps.nrtx + ssl_pbytes*8;
+    const int m = sst->cst.pps.m;
+    int i, j, rv;
+    u8 hashctx = HASHCTX_INTERNAL_GENBLINDINGSEED;
+    u8 indexbuf[4];
+    NS(chunkt) out[1] = {{sst->bsg_buf, bsgs_bytes + ksl_pbytes}};
+    NS(chunkt) in[] = {
+        {&hashctx, 1},
+        {sst->bsg_buf, bsgs_bytes},
+        {indexbuf, 4},
+        {NULL, 0}
+    };
+
+    NS(sst_gen_blinding_seed_gen_seed)(sst);
+
+    FOR(i, nrt) {
+        memcpy(sst->bsg_buf, sst->bsgs, bsgs_bytes);
+        u32le_put(indexbuf, i);
+
+        do {
+            sst->cst.xof(out, in);
+            memcpy(sst->blindingseeds[i], sst->bsg_buf + bsgs_bytes,
+                ksl_pbytes);
+            rv = scs_expand_blindingseed(&(sst->cst),
+                sst->r_sigma, sst->pi_sigma_inv,
+                sst->coms[i][0], sst->blindingseeds[i], i, 1);
+        } while (rv != 0);
+
+        sst_apply_compose_perm_inv(sst,
+            sst->v_pi_sigma, sst->sigma,
+            sst->cst.v, sst->pi_inv, sst->pi_sigma_inv);
+        scs_apply_perm_inv(&(sst->cst),
+            sst->r,
+            sst->r_sigma, sst->sigma);
+        scs_mult_by_A(&(sst->cst), sst->r);
+        FOR(j, m) u16le_put(sst->Ar_buf + 2*j, sst->cst.multbuf[j]);
+        NS(sst_gen_com1)(sst, i);
+    }
+
+    sst->cst.th.hashctx = HASHCTX_CHALLENGE1HASH;
+    sst->cst.th.leaf_bytes = ssl_cbytes;
+    sst->cst.th.n_blocks = 2*nrt;
+    FOR(i, nrt) {
+        memcpy(sst->cst.th.leaves + ssl_cbytes*2*i, sst->coms[i][0],
+            ssl_cbytes);
+        memcpy(sst->cst.th.leaves + ssl_cbytes*(2*i+1), sst->coms[i][1],
+            ssl_cbytes);
+        th_hash(&(sst->cst.th), sst->cst.h_C1, ssl_cbytes);
+    }
+}
+
