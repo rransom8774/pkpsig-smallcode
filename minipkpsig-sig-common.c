@@ -255,7 +255,9 @@ msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
         {NULL, 0}
     };
 
-    memcpy(cst->pkbytes, pkbytes, scs_pksize(cst));
+    if (cst->pkbytes != pkbytes) {
+        memcpy(cst->pkbytes, pkbytes, scs_pksize(cst));
+    }
 
     vc_decode(cst->vcpk, cst->w, pkbytes + cst->pps.kf_base+1);
 

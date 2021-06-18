@@ -86,7 +86,7 @@ th_max_sort_blocks = 0
 th_max_prefix_bytes = 0
 th_max_degree = 0
 max_n, max_m, max_A_cols = 0, 0, 0
-max_skbytes, max_pkbytes = 0, 0
+max_kfbase, max_skbytes, max_pkbytes = 0, 0, 0
 max_ksl_pbytes, max_ssl_pbytes = 0, 0
 max_ksl_cbytes, max_ssl_cbytes = 0, 0
 max_nrt, max_nrl = 0, 0
@@ -131,6 +131,7 @@ for pdline in pset_def_lines:
     max_n = max(max_n, n)
     max_m = max(max_m, m)
     max_A_cols = max(max_A_cols, n - m)
+    max_kfbase = max(max_kfbase, kfbase)
     max_skbytes = max(max_skbytes, (kfbase//2)*11 + 1)
     max_pkbytes = max(max_pkbytes, kfbase+1 + encode_bytes((q,)*m))
     nrs, nrl = int(nrss), int(nrls) # number of runs, short- and long-proof
@@ -200,6 +201,7 @@ with open("minipkpsig-paramsets-auto.h", "w") as f:
     f.write("#define PKPSIG_MAX_N %d\n" % max_n)
     f.write("#define PKPSIG_MAX_M %d\n" % max_m)
     f.write("#define PKPSIG_MAX_A_COLS %d\n" % max_A_cols)
+    f.write("#define PKPSIG_MAX_KF_BASE %d\n" % max_kfbase)
     f.write("#define PKPSIG_MAX_SECRET_KEY_BYTES %d\n" % max_skbytes)
     f.write("#define PKPSIG_MAX_PUBLIC_KEY_BYTES %d\n" % max_pkbytes)
     f.write("#define PKPSIG_MAX_KEY_PREIMAGE_BYTES %d\n" % max_ksl_pbytes)
