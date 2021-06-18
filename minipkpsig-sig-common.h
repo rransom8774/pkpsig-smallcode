@@ -98,6 +98,7 @@ MAYBE_STATIC int NS(scs_derive_permutation)(sigcommonstate *cst, u8 *perm, int g
 MAYBE_STATIC int NS(scs_expand_blindingseed)(sigcommonstate *cst, u16 *r_sigma, u8 *pi_sigma_inv, u8 *com0, const u8 *bseed, u32 runidx, int gen);
 msv NS(scs_expand_H1)(sigcommonstate *cst);
 msv NS(scs_expand_H2)(sigcommonstate *cst);
+msv NS(scs_apply_perm_inv)(sigcommonstate *cst, u16 *v_sigma_inv, const u16 *v, const u8 *sigma);
 #define scs_mod_q NS(scs_mod_q)
 #define scs_init NS(scs_init)
 #define scs_get_sig_bytes NS(scs_get_sig_bytes)
@@ -110,4 +111,5 @@ msv NS(scs_expand_H2)(sigcommonstate *cst);
 #define scs_expand_blindingseed NS(scs_expand_blindingseed)
 #define scs_expand_H1 NS(scs_expand_H1)
 #define scs_expand_H2 NS(scs_expand_H2)
+#define scs_apply_perm_inv NS(scs_apply_perm_inv)
 

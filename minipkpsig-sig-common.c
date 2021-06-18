@@ -422,3 +422,12 @@ msv NS(scs_expand_H2)(sigcommonstate *cst) {
     }
 }
 
+msv NS(scs_apply_perm_inv)(sigcommonstate *cst, u16 *v_sigma_inv, const u16 *v, const u8 *sigma) {
+    const int n = cst->pps.n;
+    int i;
+    FOR(i, n) cst->th.sortkeys[i] = (((u32)sigma[i]) << 16) + (u32)v[i];
+    cst->th.n_blocks = n;
+    th_sort_keys_full(&(cst->th));
+    FOR(i, n) v_sigma_inv[i] = cst->th.sortkeys[i] & 0xFFFF;
+}
+

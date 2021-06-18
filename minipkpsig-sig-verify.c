@@ -159,15 +159,6 @@ msv NS(svs_recover_run_indexes)(sigverifystate *vst) {
     }
 }
 
-msv NS(svs_apply_perm_inv)(sigverifystate *vst, u16 *v_sigma_inv, const u16 *v, const u8 *sigma) {
-    const int n = vst->cst.pps.n;
-    int i;
-    FOR(i, n) vst->cst.th.sortkeys[i] = (((u32)sigma[i]) << 16) + (u32)v[i];
-    vst->cst.th.n_blocks = n;
-    th_sort_keys_full(&(vst->cst.th));
-    FOR(i, n) v_sigma_inv[i] = vst->cst.th.sortkeys[i] & 0xFFFF;
-}
-
 msv NS(svs_process_long_proofs)(sigverifystate *vst) {
     size_t nS_z = vc_nS(vst->cst.vcz), nS_sigma = vc_nS(vst->cst.vcsigma),
         nS = nS_z + nS_sigma;
@@ -204,7 +195,7 @@ msv NS(svs_process_long_proofs)(sigverifystate *vst) {
 
         u32le_put(runidxbuf, vst->run_indexes[i+nrs]);
 
-        svs_apply_perm_inv(vst, z_sigma_inv, vst->z[i+nrs], sigma);
+        scs_apply_perm_inv(&(vst->cst), z_sigma_inv, vst->z[i+nrs], sigma);
         scs_mult_by_A(&(vst->cst), z_sigma_inv);
         FOR(j, m) {
             u32 Ar_j = vst->cst.multbuf[j] + neg_alpha*vst->cst.w[j];
@@ -234,7 +225,7 @@ msv NS(svs_recover_commitments_short)(sigverifystate *vst) {
         scs_expand_blindingseed(&(vst->cst), r_sigma, pi_sigma_inv,
                 vst->coms_recovered[i], vst->blindingseeds + i*ssl_cbytes,
                 vst->run_indexes[i], 0);
-        svs_apply_perm_inv(vst, vst->z[i], vst->cst.v, pi_sigma_inv);
+        scs_apply_perm_inv(&(vst->cst), vst->z[i], vst->cst.v, pi_sigma_inv);
         FOR(j, n) {
             u32 zj = r_sigma[j] + vst->z[i][j]*alpha;
             vst->z[i][j] = scs_mod_q(&(vst->cst), zj);
