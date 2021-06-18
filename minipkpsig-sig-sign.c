@@ -283,7 +283,7 @@ msv NS(sst_zkp_pass3)(signstate *sst) {
     FOR(i, nrt) {
         u8 *zbuf = sst->cst.th.leaves + i*2*n;
         FOR(j, n) {
-            u16le_put(zbuf + 2*j, z[i][j]);
+            u16le_put(zbuf + 2*j, sst->z[i][j]);
         }
     }
     th_hash(&(sst->cst.th), sst->cst.h_C2, ssl_cbytes);
