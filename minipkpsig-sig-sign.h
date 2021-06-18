@@ -22,7 +22,6 @@ typedef struct {
     u8 bsg_buf[PKPSIG_MAX_KF_BASE*4 + PKPSIG_MAX_KEY_PREIMAGE_BYTES];
     u16 r[PKPSIG_MAX_N];
     u8 pi_sigma_inv[PKPSIG_MAX_N];
-    u8 sigma[PKPSIG_MAX_N];
     u8 Ar_buf[PKPSIG_MAX_N*2];
 
     u8 blindingseeds[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_KEY_PREIMAGE_BYTES];
