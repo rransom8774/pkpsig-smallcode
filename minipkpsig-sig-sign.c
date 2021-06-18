@@ -289,3 +289,54 @@ msv NS(sst_zkp_pass3)(signstate *sst) {
     th_hash(&(sst->cst.th), sst->cst.h_C2, ssl_cbytes);
 }
 
+MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len) {
+    const int ksl_cbytes = sst->cst.ksl.cbytes;
+    const int ksl_pbytes = sst->cst.ksl.pbytes;
+    const int ssl_cbytes = sst->cst.ssl.cbytes;
+    const int ssl_pbytes = sst->cst.ssl.pbytes;
+    const int nrt = sst->cst.ps.nrtx + ssl_pbytes*8;
+    const int nrl = sst->cst.ps.nrl, nrs = nrt - nrl;
+    int i;
+    u8 *prs, *prl;
+    size_t nS_z, nS_sigma;
+
+    if (len != scs_get_sig_bytes(&(sst->cst))) return -1;
+
+    memcpy(out, sst->cst.salt_and_msghash, ksl_cbytes); out += ksl_cbytes;
+    memcpy(out, sst->cst.h_C1, ssl_cbytes); out += ssl_cbytes;
+    memcpy(out, sst->cst.h_C2, ssl_cbytes); out += ssl_cbytes;
+
+    FOR(i, nrt) {
+    }
+
+    prs = out + ssl_cbytes*i;
+    prl = prs + ksl_pbytes*nrs;
+    nS_z = vc_nS(sst->cst.vcz);
+    nS_sigma = vc_nS(sst->cst.vcsigma);
+
+    FOR(i, nrt) {
+        int H = (sst->cst.Hbuf[i] >> 15), not_H = 1-H;
+
+        memcpy(out, sst->coms[i][not_H], ssl_cbytes);
+        out += ssl_cbytes;
+
+        if (sst->cst.Hbuf[i] & 0x8000) {
+            vc_encode(sst->cst.vcz, prl, sst->z[i]);
+            prl += nS_z;
+            vc_encode(sst->cst.vcsigma, prl, sst->sigma[i]);
+            prl += nS_sigma;
+        } else {
+            memcpy(prs, sst->blindingseeds[i], ksl_pbytes);
+            prs += ksl_pbytes;
+            
+        }
+        
+        
+    }
+    
+    
+    
+    
+    
+}
+
