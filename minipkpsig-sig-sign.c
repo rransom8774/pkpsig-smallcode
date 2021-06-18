@@ -262,3 +262,30 @@ msv NS(sst_zkp_pass1)(signstate *sst) {
     th_hash(&(sst->cst.th), sst->cst.h_C1, ssl_cbytes);
 }
 
+msv NS(sst_zkp_pass3)(signstate *sst) {
+    const int ssl_cbytes = sst->cst.ssl.cbytes;
+    const int ssl_pbytes = sst->cst.ssl.pbytes;
+    const int nrt = sst->cst.ps.nrtx + ssl_pbytes*8;
+    const int n = sst->cst.pps.n;
+    int i, j;
+
+    FOR(i, nrt) {
+        u32 alpha = sst->cst.Hbuf[i] & 0x7FFF;
+        FOR(j, n) {
+            u32 zj = sst->r_sigma[i][j] + alpha*sst->v_pi_sigma[i][j];
+            sst->z[i][j] = scs_mod_q(&(sst->cst), zj);
+        }
+    }
+
+    sst->cst.th.hashctx = HASHCTX_CHALLENGE2HASH;
+    sst->cst.th.leaf_bytes = 2*n;
+    sst->cst.th.n_blocks = nrt;
+    FOR(i, nrt) {
+        u8 *zbuf = sst->cst.th.leaves + i*2*n;
+        FOR(j, n) {
+            u16le_put(zbuf + 2*j, z[i][j]);
+        }
+    }
+    th_hash(&(sst->cst.th), sst->cst.h_C2, ssl_cbytes);
+}
+

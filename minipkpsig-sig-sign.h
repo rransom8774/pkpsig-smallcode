@@ -42,6 +42,7 @@ MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen);
 msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len);
 msv NS(sst_apply_compose_perm_inv)(signstate *sst, u16 *v_sigma, u8 *pi_sigma, const u16 *v, const u8 *pi, const u8 *sigma_inv);
 msv NS(sst_zkp_pass1)(signstate *sst);
+msv NS(sst_zkp_pass3)(signstate *sst);
 #define sst_init NS(sst_init)
 #define sst_erase NS(sst_erase)
 #define sst_sksize NS(sst_sksize)
@@ -51,4 +52,5 @@ msv NS(sst_zkp_pass1)(signstate *sst);
 #define sst_hash_message NS(sst_hash_message)
 #define sst_apply_compose_perm_inv NS(sst_apply_compose_perm_inv)
 #define sst_zkp_pass1 NS(sst_zkp_pass1)
+#define sst_zkp_pass3 NS(sst_zkp_pass3)
 
