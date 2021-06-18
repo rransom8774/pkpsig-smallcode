@@ -235,16 +235,16 @@ msv NS(sst_zkp_pass1)(signstate *sst) {
             memcpy(sst->blindingseeds[i], sst->bsg_buf + bsgs_bytes,
                 ksl_pbytes);
             rv = scs_expand_blindingseed(&(sst->cst),
-                sst->r_sigma, sst->pi_sigma_inv,
+                sst->r_sigma[i], sst->pi_sigma_inv,
                 sst->coms[i][0], sst->blindingseeds[i], i, 1);
         } while (rv != 0);
 
         sst_apply_compose_perm_inv(sst,
-            sst->v_pi_sigma, sst->sigma,
+            sst->v_pi_sigma[i], sst->sigma,
             sst->cst.v, sst->pi_inv, sst->pi_sigma_inv);
         scs_apply_perm_inv(&(sst->cst),
             sst->r,
-            sst->r_sigma, sst->sigma);
+            sst->r_sigma[i], sst->sigma);
         scs_mult_by_A(&(sst->cst), sst->r);
         FOR(j, m) u16le_put(sst->Ar_buf + 2*j, sst->cst.multbuf[j]);
         NS(sst_gen_com1)(sst, i);
