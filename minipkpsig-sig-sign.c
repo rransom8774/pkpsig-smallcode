@@ -306,9 +306,6 @@ MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len) {
     memcpy(out, sst->cst.h_C1, ssl_cbytes); out += ssl_cbytes;
     memcpy(out, sst->cst.h_C2, ssl_cbytes); out += ssl_cbytes;
 
-    FOR(i, nrt) {
-    }
-
     prs = out + ssl_cbytes*i;
     prl = prs + ksl_pbytes*nrs;
     nS_z = vc_nS(sst->cst.vcz);
@@ -328,15 +325,9 @@ MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len) {
         } else {
             memcpy(prs, sst->blindingseeds[i], ksl_pbytes);
             prs += ksl_pbytes;
-            
         }
-        
-        
     }
-    
-    
-    
-    
-    
+
+    return 0;
 }
 
