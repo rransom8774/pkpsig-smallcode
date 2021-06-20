@@ -73,7 +73,7 @@ msv NS(sst_get_skblob)(signstate *sst, u8 *skbytes) {
     memcpy(skbytes, sst->seckeychecksum, (kf_base+1)/2);
 }
 
-int NS(simple_keypair)(const char *psname, uint8_t *pk_out, uint8_t *sk_out) {
+int NS(simple_keypair)(const char *psname, u8 *pk_out, u8 *sk_out) {
     signstate sst;
     pst ps;
     int rv;
