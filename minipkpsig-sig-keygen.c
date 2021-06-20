@@ -90,6 +90,7 @@ int NS(simple_keypair)(const char *psname, u8 *pk_out, u8 *sk_out) {
         memset(pk_out, 0, pksize);
         memset(sk_out, 0, sksize);
     }
+    sst_erase(&sst);
     return rv;
 }
 
