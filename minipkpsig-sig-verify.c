@@ -302,3 +302,12 @@ MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, const u8 *ms
     return rv;
 }
 
+int NS(simple_detached_verify)(const char *psname, const u8 *sigin, const u8 *msg, size_t msglen, const u8 *pk) {
+    sigverifystate vst;
+    pst ps;
+    if (ps_lookup(ps, psname) < 0) return -1;
+    svs_init(&vst, &ps);
+    scs_expand_pk(&(vst.cst), pk);
+    return svs_verify(&vst, sigin, msg, msglen);
+}
+
