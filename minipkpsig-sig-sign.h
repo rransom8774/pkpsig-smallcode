@@ -43,6 +43,7 @@ msv NS(sst_apply_compose_perm_inv)(signstate *sst, u16 *v_sigma, u8 *pi_sigma, c
 msv NS(sst_zkp_pass1)(signstate *sst);
 msv NS(sst_zkp_pass3)(signstate *sst);
 MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len);
+MAYBE_STATIC int NS(sst_sign)(signstate *vst, u8 *sig, size_t siglen, const u8 *msg, size_t msglen);
 #define sst_init NS(sst_init)
 #define sst_erase NS(sst_erase)
 #define sst_sksize NS(sst_sksize)
@@ -54,4 +55,5 @@ MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len);
 #define sst_zkp_pass1 NS(sst_zkp_pass1)
 #define sst_zkp_pass3 NS(sst_zkp_pass3)
 #define sst_gen_signature NS(sst_gen_signature)
+#define sst_sign NS(sst_sign)
 

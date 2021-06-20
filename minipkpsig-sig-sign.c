@@ -331,3 +331,14 @@ MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len) {
     return 0;
 }
 
+MAYBE_STATIC int NS(sst_sign)(signstate *sst, u8 *sig, size_t siglen, const u8 *msg, size_t msglen) {
+    sigcommonstate *cst = &(sst->cst);
+
+    sst_hash_message(sst, msg, msglen);
+    sst_zkp_pass1(sst);
+    scs_expand_H1(cst);
+    sst_zkp_pass3(sst);
+    scs_expand_H2(cst);
+    return sst_gen_signature(sst, sig, siglen);
+}
+
