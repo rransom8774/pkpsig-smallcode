@@ -346,3 +346,16 @@ ssize_t NS(simple_get_secretkey_bytes)(const char *psname) {
     return sst_sksize(&sst);
 }
 
+int NS(simple_detached_sign)(const char *psname, u8 *sigout, const u8 *msg, size_t msglen, const u8 *sk) {
+    signstate sst;
+    pst ps;
+    if (ps_lookup(ps, psname) < 0) return -1;
+    sst_init(&sst, &ps);
+
+    sst_set_secret_key(&sst, sk, 0);
+    sst_sign(&sst, sigout, msg, msglen);
+
+    sst_erase(&sst);
+    return 0;
+}
+
