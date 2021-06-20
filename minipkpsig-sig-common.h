@@ -8,6 +8,9 @@
  * WARRANTY WHATSOEVER.
  */
 
+/* needed for ssize_t */
+#include <sys/types.h>
+
 #define PERMSAMPLER_RANDOM_MASK 0xFFFFFF80
 #define PERMSAMPLER_INDEX_MASK  0x0000007F
 
@@ -115,4 +118,9 @@ msv NS(scs_apply_perm_inv)(sigcommonstate *cst, u16 *v_sigma_inv, const u16 *v, 
 #define scs_expand_H1 NS(scs_expand_H1)
 #define scs_expand_H2 NS(scs_expand_H2)
 #define scs_apply_perm_inv NS(scs_apply_perm_inv)
+
+MAYBE_STATIC ssize_t NS(simple_get_publickey_bytes)(const char *psname);
+MAYBE_STATIC ssize_t NS(simple_get_signature_bytes)(const char *psname);
+#define simple_get_publickey_bytes NS(simple_get_publickey_bytes)
+#define simple_get_signature_bytes NS(simple_get_signature_bytes)
 

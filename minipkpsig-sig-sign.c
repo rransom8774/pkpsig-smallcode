@@ -338,3 +338,11 @@ msv NS(sst_sign)(signstate *sst, u8 *sig, const u8 *msg, size_t msglen) {
     sst_gen_signature(sst, sig);
 }
 
+MAYBE_STATIC ssize_t NS(simple_get_secretkey_bytes)(const char *psname) {
+    signstate sst;
+    pst ps;
+    if (ps_lookup(ps, psname) < 0) return -1;
+    sst_init(&sst, &ps);
+    return sst_sksize(&sst);
+}
+
