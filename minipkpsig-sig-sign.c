@@ -347,7 +347,7 @@ int NS(simple_detached_sign)(const char *psname, u8 *sigout, const u8 *msg, size
     if (ps_lookup(ps, psname) < 0) return -1;
     sst_init(&sst, &ps);
 
-    sst_set_secret_key(&sst, sk, 0);
+    sst_set_secret_key(&sst, sk);
     sst_sign(&sst, sigout, msg, msglen);
 
     sst_erase(&sst);
