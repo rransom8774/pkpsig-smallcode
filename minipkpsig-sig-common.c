@@ -445,7 +445,7 @@ msv NS(scs_apply_perm_inv)(sigcommonstate *cst, u16 *v_sigma_inv, const u16 *v, 
     FOR(i, n) v_sigma_inv[i] = cst->th.sortkeys[i] & 0xFFFF;
 }
 
-MAYBE_STATIC ssize_t NS(simple_get_publickey_bytes)(const char *psname) {
+ssize_t NS(simple_get_publickey_bytes)(const char *psname) {
     sigcommonstate cst;
     pst ps;
     if (ps_lookup(ps, psname) < 0) return -1;
@@ -453,7 +453,7 @@ MAYBE_STATIC ssize_t NS(simple_get_publickey_bytes)(const char *psname) {
     return scs_pksize(&cst);
 }
 
-MAYBE_STATIC ssize_t NS(simple_get_signature_bytes)(const char *psname) {
+ssize_t NS(simple_get_signature_bytes)(const char *psname) {
     sigcommonstate cst;
     pst ps;
     if (ps_lookup(ps, psname) < 0) return -1;
