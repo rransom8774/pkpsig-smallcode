@@ -94,7 +94,7 @@ msv NS(sst_checksum_seckey)(signstate *sst) {
     sst->cst.xof(out, in);
 }
 
-MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen) {
+MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk) {
     const int kf_base = sst->cst.pps.kf_base,
         cksum_bytes = (kf_base + 1)/2,
         n = sst->cst.pps.n, m = sst->cst.pps.m;
@@ -122,12 +122,7 @@ MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk, int gen) {
 
     /* recompute checksum; check it unless generating a new key */
     sst_checksum_seckey(sst);
-    if (gen) {
-        memcpy(sst->seckeychecksum, sst->cst.hashbuf, cksum_bytes);
-        rv = 0;
-    } else {
-        rv = memverify_ct(sst->seckeychecksum, sst->cst.hashbuf, cksum_bytes);
-    }
+    rv = memverify_ct(sst->seckeychecksum, sst->cst.hashbuf, cksum_bytes);
 
     /* clobber secret key if checksum does not match */
     if (rv != 0) {
