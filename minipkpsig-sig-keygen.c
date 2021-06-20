@@ -28,6 +28,8 @@ extern symt symalgs[];
 extern pst paramsets[];
 #endif
 
+#include <string.h>
+
 MAYBE_STATIC int NS(scs_check_v)(sigcommonstate *cst) {
     const int n = cst->pps.n;
     int i;
@@ -69,5 +71,25 @@ msv NS(sst_get_skblob)(signstate *sst, u8 *skbytes) {
     memcpy(skbytes, sst->seckeyseed, 2*kf_base); skbytes += 2*kf_base;
     memcpy(skbytes, sst->saltgenseed, 2*kf_base); skbytes += 2*kf_base;
     memcpy(skbytes, sst->seckeychecksum, (kf_base+1)/2);
+}
+
+int NS(simple_keypair)(const char *psname, uint8_t *pk_out, uint8_t *sk_out) {
+    signstate sst;
+    pst ps;
+    int rv;
+    size_t pksize, sksize;
+    if (ps_lookup(ps, psname) < 0) return -1;
+    sst_init(&sst, &ps);
+    pksize = scs_pksize(&(sst.cst));
+    sksize = sst_sksize(&sst);
+    rv = sst_keypair(&sst);
+    if (rv == 0) {
+        memcpy(pk_out, sst.cst.pkbytes, pksize);
+        sst_get_skblob(&sst, sk_out);
+    } else {
+        memset(pk_out, 0, pksize);
+        memset(sk_out, 0, sksize);
+    }
+    return rv;
 }
 
