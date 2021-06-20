@@ -289,7 +289,7 @@ msv NS(sst_zkp_pass3)(signstate *sst) {
     th_hash(&(sst->cst.th), sst->cst.h_C2, ssl_cbytes);
 }
 
-MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len) {
+msv NS(sst_gen_signature)(signstate *sst, u8 *out) {
     const int ksl_cbytes = sst->cst.ksl.cbytes;
     const int ksl_pbytes = sst->cst.ksl.pbytes;
     const int ssl_cbytes = sst->cst.ssl.cbytes;
@@ -299,8 +299,6 @@ MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len) {
     int i;
     u8 *prs, *prl;
     size_t nS_z, nS_sigma;
-
-    if (len != scs_get_sig_bytes(&(sst->cst))) return -1;
 
     memcpy(out, sst->cst.salt_and_msghash, ksl_cbytes); out += ksl_cbytes;
     memcpy(out, sst->cst.h_C1, ssl_cbytes); out += ssl_cbytes;
@@ -327,11 +325,9 @@ MAYBE_STATIC int NS(sst_gen_signature)(signstate *sst, u8 *out, size_t len) {
             prs += ksl_pbytes;
         }
     }
-
-    return 0;
 }
 
-MAYBE_STATIC int NS(sst_sign)(signstate *sst, u8 *sig, size_t siglen, const u8 *msg, size_t msglen) {
+msv NS(sst_sign)(signstate *sst, u8 *sig, const u8 *msg, size_t msglen) {
     sigcommonstate *cst = &(sst->cst);
 
     sst_hash_message(sst, msg, msglen);
@@ -339,6 +335,6 @@ MAYBE_STATIC int NS(sst_sign)(signstate *sst, u8 *sig, size_t siglen, const u8 *
     scs_expand_H1(cst);
     sst_zkp_pass3(sst);
     scs_expand_H2(cst);
-    return sst_gen_signature(sst, sig, siglen);
+    sst_gen_signature(sst, sig);
 }
 

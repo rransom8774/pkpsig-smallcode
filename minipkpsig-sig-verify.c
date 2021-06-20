@@ -101,15 +101,13 @@ msv NS(svs_init)(sigverifystate *vst, const pst *ps) {
     scs_init(&(vst->cst), ps);
 }
 
-MAYBE_STATIC int NS(svs_set_signature)(sigverifystate *vst, const u8 *sig, size_t len) {
+msv NS(svs_set_signature)(sigverifystate *vst, const u8 *sig) {
     const int ksl_cbytes = vst->cst.ksl.cbytes;
     const int ksl_pbytes = vst->cst.ksl.pbytes;
     const int ssl_cbytes = vst->cst.ssl.cbytes;
     const int ssl_pbytes = vst->cst.ssl.pbytes;
     const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8;
     const int nrs = nrt - vst->cst.ps.nrl;
-
-    if (scs_get_sig_bytes(&(vst->cst)) != len) return -1;
 
     memcpy(vst->cst.salt_and_msghash, sig, ksl_cbytes);
     memcpy(vst->cst.h_C1, sig + ksl_cbytes, ssl_cbytes);
@@ -118,8 +116,6 @@ MAYBE_STATIC int NS(svs_set_signature)(sigverifystate *vst, const u8 *sig, size_
     vst->coms = sig + ksl_cbytes + ssl_cbytes*2;
     vst->blindingseeds = vst->coms + ssl_cbytes*nrt;
     vst->longproofs = vst->blindingseeds + ksl_pbytes*nrs;
-
-    return 0;
 }
 
 msv NS(svs_recover_run_indexes)(sigverifystate *vst) {
@@ -289,13 +285,11 @@ MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst) {
     return memverify_ct(vst->cst.hashbuf, vst->cst.h_C1, ssl_cbytes);
 }
 
-MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, size_t siglen, const u8 *msg, size_t msglen) {
+MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, const u8 *msg, size_t msglen) {
     sigcommonstate *cst = &(vst->cst);
     int rv = 0;
 
-    rv |= svs_set_signature(vst, sig, siglen);
-    if (rv != 0) return rv;
-
+    svs_set_signature(vst, sig);
     scs_hash_message(cst, msg, msglen);
     scs_expand_H1(cst);
     scs_expand_H2(cst);

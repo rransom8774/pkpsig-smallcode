@@ -28,13 +28,13 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps);
 #define th_sort_verifyC2 NS(th_sort_verifyC2)
 
 msv NS(svs_init)(sigverifystate *vst, const pst *ps);
-MAYBE_STATIC int NS(svs_set_signature)(sigverifystate *vst, const u8 *sig, size_t len);
+msv NS(svs_set_signature)(sigverifystate *vst, const u8 *sig);
 msv NS(svs_recover_run_indexes)(sigverifystate *vst);
 msv NS(svs_process_long_proofs)(sigverifystate *vst);
 msv NS(svs_recover_commitments_short)(sigverifystate *vst);
 MAYBE_STATIC int NS(svs_verify_C2)(sigverifystate *vst);
 MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst);
-MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, size_t siglen, const u8 *msg, size_t msglen);
+MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, const u8 *msg, size_t msglen);
 #define svs_init NS(svs_init)
 #define svs_set_signature NS(svs_set_signature)
 #define svs_recover_run_indexes NS(svs_recover_run_indexes)
