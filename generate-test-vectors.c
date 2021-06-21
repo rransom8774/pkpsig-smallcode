@@ -177,15 +177,16 @@ static int generate_test_vector_file(const char *psname, uint32_t i) {
   write_ui32(f, i);
 
   rv = compute_test_vector(psname, i);
-  if (rv < 0) {
-    fprintf(stderr, "error generating test vector %s\n", fnamebuf.data);
-    goto end;
-  };
 
   write_buf(f, &seckeybuf);
   write_buf(f, &pubkeybuf);
   write_buf(f, &msgbuf);
   write_buf(f, &sigbuf);
+
+  if (rv < 0) {
+    fprintf(stderr, "error generating test vector %s\n", fnamebuf.data);
+    goto end;
+  };
 
   if (ferror(f) != 0) {
     fprintf(stderr, "error writing test vector %s\n", fnamebuf.data);
