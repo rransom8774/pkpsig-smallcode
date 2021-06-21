@@ -300,7 +300,7 @@ msv NS(sst_gen_signature)(signstate *sst, u8 *out) {
     memcpy(out, sst->cst.h_C1, ssl_cbytes); out += ssl_cbytes;
     memcpy(out, sst->cst.h_C2, ssl_cbytes); out += ssl_cbytes;
 
-    prs = out + ssl_cbytes*i;
+    prs = out + ssl_cbytes*nrt;
     prl = prs + ksl_pbytes*nrs;
     nS_z = vc_nS(sst->cst.vcz);
     nS_sigma = vc_nS(sst->cst.vcsigma);
