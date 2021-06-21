@@ -113,6 +113,7 @@ MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk) {
     memcpy(sst->cst.pkbytes, sk, kf_base + 1);
     memcpy(sst->seckeyseed, sk + kf_base+1, kf_base*2);
     memcpy(sst->saltgenseed, sk + 3*kf_base+1, kf_base*2);
+    memcpy(sst->seckeychecksum, sk + 5*kf_base+1, cksum_bytes);
 
     /* expand A and v */
     scs_expand_pk(&(sst->cst), sst->cst.pkbytes);
