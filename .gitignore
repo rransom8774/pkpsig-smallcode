@@ -6,3 +6,4 @@ debug-th-sorting
 *.png
 TVSet_*.bin
 TVSet_*.txt
+generate-test-vectors

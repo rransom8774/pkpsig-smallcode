@@ -24,6 +24,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+int minipkpsig_randombytes(u8 *out, size_t outbytes) {
+  return randombytes(out, outbytes);
+};
+
 static inline void pack_ui32(uint8_t *buf, uint32_t x) {
   buf[0] =  x        & 255;
   buf[1] = (x >>  8) & 255;

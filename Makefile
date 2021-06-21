@@ -8,7 +8,7 @@ clean:
 	-rm -v *.o
 
 
-generate-test-vectors: generate-test-vectors.o minipkpsig-sig-keygen.o minipkpsig-sig-sign.o minipkpsig-sig-verify.o minipkpsig-sig-thsort.o minipkpsig-sig-common.o minipkpsig-paramsets-auto.o minipkpsig-seclevels-auto.o minipkpsig-symalgs.o minipkpsig-sym-shake256-xkcp.o minipkpsig-modvc.o minipkpsig-common.o
+generate-test-vectors: generate-test-vectors.o randombytes_shake256_deterministic.o minipkpsig-sig-keygen.o minipkpsig-sig-sign.o minipkpsig-sig-verify.o minipkpsig-sig-thsort.o minipkpsig-sig-common.o minipkpsig-paramsets-auto.o minipkpsig-seclevels-auto.o minipkpsig-symalgs.o minipkpsig-sym-shake256-xkcp.o minipkpsig-modvc.o minipkpsig-common.o
 	cc -g -o $@ $+ -lXKCP
 
 gentestvecs-modvc: gentestvecs-modvc.o minipkpsig-modvc.o minipkpsig-common.o
@@ -59,7 +59,10 @@ minipkpsig-sig-keygen.o: minipkpsig-sig-keygen.c minipkpsig-sig-keygen.h minipkp
 	cc -g -c -o $@ $<
 
 
-generate-test-vectors.o: generate-test-vectors.c minipkpsig.h
+generate-test-vectors.o: generate-test-vectors.c minipkpsig.h randombytes_shake256_deterministic.h
+	cc -g -c -o $@ $<
+
+randombytes_shake256_deterministic.o: randombytes_shake256_deterministic.c randombytes_shake256_deterministic.h
 	cc -g -c -o $@ $<
 
 gentestvecs-modvc.o: gentestvecs-modvc.c minipkpsig-modvc.h minipkpsig-common.h minipkpsig.h
