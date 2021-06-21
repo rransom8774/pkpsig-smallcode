@@ -15,5 +15,3 @@ msv NS(sst_get_skblob)(signstate *sst, u8 *skbytes);
 #define sst_keypair NS(sst_keypair)
 #define sst_get_skblob NS(sst_get_skblob)
 
-int NS(simple_keypair)(const char *psname, u8 *pk_out, u8 *sk_out);
-

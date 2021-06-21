@@ -8,16 +8,10 @@
  * WARRANTY WHATSOEVER.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "minipkpsig.h"
 
 #define FOR(i,n) for(i=0; i<n; ++i)
 #define sv static void
-
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
 
 #ifdef MINIPKPSIG_SINGLEFILE
 #define MAYBE_STATIC static
@@ -32,8 +26,6 @@ typedef struct {
     void *p;
     size_t bytes;
 } NS(chunkt);
-
-typedef int (*NS(enum_names_cb))(void *cbdata, const char *name);
 
 msv NS(u16le_put)(uint8_t *buf, uint16_t x);
 #define u16le_put NS(u16le_put)

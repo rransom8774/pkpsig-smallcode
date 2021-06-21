@@ -8,9 +8,6 @@
  * WARRANTY WHATSOEVER.
  */
 
-/* needed for ssize_t */
-#include <sys/types.h>
-
 #define PERMSAMPLER_RANDOM_MASK 0xFFFFFF80
 #define PERMSAMPLER_INDEX_MASK  0x0000007F
 
@@ -39,9 +36,7 @@
 #define TH_PARAM_BYTES 7
 
 MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name);
-MAYBE_STATIC int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata);
 #define ps_lookup(ps_, name) NS(ps_lookup_)(&(ps_), (name))
-#define ps_enum_names NS(ps_enum_names)
 
 typedef struct {
     sym_xof_chunked xof;
@@ -118,7 +113,4 @@ msv NS(scs_apply_perm_inv)(sigcommonstate *cst, u16 *v_sigma_inv, const u16 *v, 
 #define scs_expand_H1 NS(scs_expand_H1)
 #define scs_expand_H2 NS(scs_expand_H2)
 #define scs_apply_perm_inv NS(scs_apply_perm_inv)
-
-ssize_t NS(simple_get_publickey_bytes)(const char *psname);
-ssize_t NS(simple_get_signature_bytes)(const char *psname);
 

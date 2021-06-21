@@ -44,5 +44,3 @@ MAYBE_STATIC int NS(svs_verify)(sigverifystate *vst, const u8 *sig, const u8 *ms
 #define svs_verify_C1 NS(svs_verify_C1)
 #define svs_verify NS(svs_verify)
 
-int NS(simple_detached_verify)(const char *psname, const u8 *sigin, const u8 *msg, size_t msglen, const u8 *pk);
-

@@ -57,6 +57,3 @@ msv NS(sst_sign)(signstate *vst, u8 *sig, const u8 *msg, size_t msglen);
 #define sst_gen_signature NS(sst_gen_signature)
 #define sst_sign NS(sst_sign)
 
-ssize_t NS(simple_get_secretkey_bytes)(const char *psname);
-int NS(simple_detached_sign)(const char *psname, u8 *sigout, const u8 *msg, size_t msglen, const u8 *sk);
-

@@ -18,7 +18,6 @@
 #include "minipkpsig-sig-common.h"
 #include "minipkpsig-sig-thsort.h"
 #include "minipkpsig-sig-sign.h"
-#include "minipkpsig-randombytes.h"
 #include "minipkpsig-sig-keygen.h"
 
 #ifndef MINIPKPSIG_SINGLEFILE

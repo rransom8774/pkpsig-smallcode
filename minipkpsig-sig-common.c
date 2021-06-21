@@ -84,7 +84,7 @@ MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name) {
 }
 #define ps_lookup(ps_, name) NS(ps_lookup_)(&(ps_), (name))
 
-MAYBE_STATIC int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata) {
+int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata) {
     char buf[64];
     int rv, i;
     u8 isym, pps;
