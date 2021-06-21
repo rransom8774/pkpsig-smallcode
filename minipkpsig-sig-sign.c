@@ -139,7 +139,7 @@ msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len) {
     NS(chunkt) out[1] = {{sst->cst.salt_and_msghash, ksl_cbytes}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
-        {msg, len},
+        {(u8 *)msg, len},
         {sst->saltgenseed, kf_base*2},
         {NULL, 0}
     };
