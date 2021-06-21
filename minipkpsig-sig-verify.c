@@ -141,6 +141,19 @@ msv NS(svs_recover_run_indexes)(sigverifystate *vst) {
     }
 }
 
+sv NS(unsquish_permutation)(u16 *sigma, int n) {
+    int i, j;
+    i = n;
+    while (i != 0) {
+        int s_i;
+        --i;
+        s_i = sigma[i];
+        for (j = i+1; j < n; ++j) {
+            if (sigma[j] >= s_i) ++(sigma[j]);
+        }
+    }
+}
+
 msv NS(svs_process_long_proofs)(sigverifystate *vst) {
     size_t nS_z = vc_nS(vst->cst.vcz), nS_sigma = vc_nS(vst->cst.vcsigma),
         nS = nS_z + nS_sigma;
@@ -173,6 +186,7 @@ msv NS(svs_process_long_proofs)(sigverifystate *vst) {
 
         vc_decode(vst->cst.vcz, vst->z[i+nrs], vst->longproofs + i*nS);
         vc_decode(vst->cst.vcsigma, sigma_buf, vst->longproofs + i*nS + nS_z);
+        NS(unsquish_permutation)(sigma_buf, n);
         FOR(j, n) sigma[j] = sigma_buf[j];
 
         u32le_put(runidxbuf, vst->run_indexes[i+nrs]);

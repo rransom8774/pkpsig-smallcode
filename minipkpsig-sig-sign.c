@@ -284,6 +284,16 @@ msv NS(sst_zkp_pass3)(signstate *sst) {
     th_hash(&(sst->cst.th), sst->cst.h_C2, ssl_cbytes);
 }
 
+sv NS(squish_permutation)(u16 *sigma, int n) {
+    int i, j;
+    FOR(i, n) {
+        int s_i = sigma[i];
+        for (j = i+1; j < n; ++j) {
+            if (sigma[j] > s_i) --(sigma[j]);
+        }
+    }
+}
+
 msv NS(sst_gen_signature)(signstate *sst, u8 *out) {
     const int ksl_cbytes = sst->cst.ksl.cbytes;
     const int ksl_pbytes = sst->cst.ksl.pbytes;
@@ -315,6 +325,7 @@ msv NS(sst_gen_signature)(signstate *sst, u8 *out) {
             vc_encode(sst->cst.vcz, prl, sst->z[i]);
             prl += nS_z;
             FOR(j, n) sst->sigma_buf[j] = sst->sigma[i][j];
+            NS(squish_permutation)(sst->sigma_buf, n);
             vc_encode(sst->cst.vcsigma, prl, sst->sigma_buf);
             prl += nS_sigma;
         } else {
