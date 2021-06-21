@@ -279,7 +279,7 @@ msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
     cst->xof(out, in);
     FOR(j, n) cst->v[j] = scs_mod_q(cst, u32le_get(cst->hashbuf + 4*j));
 
-    for (i = n - m; i < n; ++i) {
+    for (i = m; i < n; ++i) {
         u32le_put(ibuf, i);
         cst->xof(out, in);
         FOR(j, m) cst->A[i-m][j] = scs_mod_q(cst, u32le_get(cst->hashbuf + 4*j));
@@ -293,7 +293,8 @@ msv NS(scs_mult_by_A)(sigcommonstate *cst, const u16 *z) {
 
     FOR(i, m) cst->multbuf[i] = z[i];
     for (i = m; i < n; ++i) {
-        FOR(j, m) cst->multbuf[j] += z[i] * cst->A[i-m][j];
+        u32 z_i = z[i];
+        FOR(j, m) cst->multbuf[j] += z_i * (u32)cst->A[i-m][j];
     }
 
     FOR(i, m) cst->multbuf[i] = scs_mod_q(cst, cst->multbuf[i]);
