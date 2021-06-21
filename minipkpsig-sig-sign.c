@@ -145,6 +145,11 @@ msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len) {
         {NULL, 0}
     };
 
+    if (msg == NULL) {
+        in[1].p = (u8 *) ""; msg = "";
+        in[1].bytes = len = 0;
+    }
+
     sst->cst.xof(out, in);
 
     return scs_hash_message(&(sst->cst), msg, len);
