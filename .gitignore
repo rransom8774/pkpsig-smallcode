@@ -7,3 +7,4 @@ debug-th-sorting
 TVSet_*.bin
 TVSet_*.txt
 generate-test-vectors
+out/
