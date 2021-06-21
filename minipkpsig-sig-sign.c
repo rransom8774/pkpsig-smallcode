@@ -291,7 +291,8 @@ msv NS(sst_gen_signature)(signstate *sst, u8 *out) {
     const int ssl_pbytes = sst->cst.ssl.pbytes;
     const int nrt = sst->cst.ps.nrtx + ssl_pbytes*8;
     const int nrl = sst->cst.ps.nrl, nrs = nrt - nrl;
-    int i;
+    const int n = sst->cst.pps.n;
+    int i, j;
     u8 *prs, *prl;
     size_t nS_z, nS_sigma;
 
@@ -313,7 +314,8 @@ msv NS(sst_gen_signature)(signstate *sst, u8 *out) {
         if (sst->cst.Hbuf[i] & 0x8000) {
             vc_encode(sst->cst.vcz, prl, sst->z[i]);
             prl += nS_z;
-            vc_encode(sst->cst.vcsigma, prl, sst->sigma[i]);
+            FOR(j, n) sst->sigma_buf[j] = sst->sigma[i][j];
+            vc_encode(sst->cst.vcsigma, prl, sst->sigma_buf);
             prl += nS_sigma;
         } else {
             memcpy(prs, sst->blindingseeds[i], ksl_pbytes);

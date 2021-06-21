@@ -30,6 +30,8 @@ typedef struct {
     u16 v_pi_sigma[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
     u16 z[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
     u8 sigma[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
+
+    u16 sigma_buf[PKPSIG_MAX_N];
 } signstate;
 
 msv NS(sst_init)(signstate *sst, const pst *ps);
