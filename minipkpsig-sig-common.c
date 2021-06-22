@@ -138,6 +138,7 @@ sv th_hash_level(tht *th) {
     NS(chunkt) in[TH_MAX_DEGREE + 4] = {
         {&(th->hashctx), 1},
         {th->prefix, th->prefix_bytes},
+        {th->params, TH_PARAM_BYTES},
         {nibuf, 4},
         {NULL, 0}
     };
