@@ -166,7 +166,7 @@ sv th_hash_level(tht *th) {
     }
 
     th->next_node_index = node_index;
-    th->node_bytes = out_node_bytes;
+    th->leaf_bytes = out_node_bytes;
     th->n_blocks = idx_out;
 }
 
