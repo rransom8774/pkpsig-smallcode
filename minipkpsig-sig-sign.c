@@ -191,6 +191,7 @@ sv NS(sst_gen_com1)(signstate *sst, int i) {
     const int ksl_cbytes = sst->cst.ksl.cbytes;
     const int ssl_cbytes = sst->cst.ssl.cbytes;
     const int n = sst->cst.pps.n;
+    const int m = sst->cst.pps.m;
     u8 hashctx = HASHCTX_COMMITMENT;
     u8 indexbuf[4];
     NS(chunkt) out[1] = {{sst->coms[i][1], ssl_cbytes}};
@@ -199,7 +200,7 @@ sv NS(sst_gen_com1)(signstate *sst, int i) {
         {sst->cst.salt_and_msghash, ksl_cbytes*2},
         {indexbuf, 4},
         {sst->sigma, n},
-        {sst->Ar_buf, n*2},
+        {sst->Ar_buf, m*2},
         {NULL, 0}
     };
 
