@@ -343,6 +343,7 @@ MAYBE_STATIC int NS(scs_derive_permutation)(sigcommonstate *cst, u8 *perm, int g
 }
 
 MAYBE_STATIC int NS(scs_expand_blindingseed)(sigcommonstate *cst, u16 *r_sigma, u8 *pi_sigma_inv, u8 *com0, const u8 *bseed, u32 runidx, int gen) {
+    const int ksl_pbytes = cst->ksl.pbytes;
     const int ksl_cbytes = cst->ksl.cbytes;
     const int ssl_cbytes = cst->ssl.cbytes;
     const int n = cst->pps.n;
@@ -354,6 +355,7 @@ MAYBE_STATIC int NS(scs_expand_blindingseed)(sigcommonstate *cst, u16 *r_sigma, 
         {&hashctx, 1},
         {cst->salt_and_msghash, ksl_cbytes*2},
         {runidxbuf, 4},
+        {(u8 *)bseed, ksl_pbytes},
         {NULL, 0}
     };
 
