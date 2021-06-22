@@ -123,7 +123,7 @@ msv NS(th_init)(tht *th, const pst *ps) {
 
     th->xof = symalgs[ps->sym].xof_chunked;
     th->prefix_bytes = ksl_cbytes * 2;
-    th->degree = (136*4 - 16 - th->prefix_bytes) / ksl_cbytes;
+    th->degree = (136*4 - 16 - th->prefix_bytes) / ssl_cbytes;
     th->next_node_index = 0;
     th->params[0] = th->degree;
     th->params[1] = th->node_bytes = ssl_cbytes;
