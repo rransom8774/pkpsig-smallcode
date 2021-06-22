@@ -252,6 +252,7 @@ msv NS(sst_zkp_pass1)(signstate *sst) {
         NS(sst_gen_com1)(sst, i);
     }
 
+    th_init(&(sst->cst.th), &(sst->cst.ps));
     sst->cst.th.hashctx = HASHCTX_CHALLENGE1HASH;
     sst->cst.th.leaf_bytes = ssl_cbytes;
     sst->cst.th.n_blocks = 2*nrt;
@@ -279,6 +280,7 @@ msv NS(sst_zkp_pass3)(signstate *sst) {
         }
     }
 
+    th_init(&(sst->cst.th), &(sst->cst.ps));
     sst->cst.th.hashctx = HASHCTX_CHALLENGE2HASH;
     sst->cst.th.leaf_bytes = 2*n;
     sst->cst.th.n_blocks = nrt;

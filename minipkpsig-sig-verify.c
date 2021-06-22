@@ -238,6 +238,8 @@ MAYBE_STATIC int NS(svs_verify_C2)(sigverifystate *vst) {
     int i, j;
     size_t zbytes = vst->cst.th.leaf_bytes = n*2;
 
+    th_init(&(vst->cst.th), &(vst->cst.ps));
+
     vst->cst.th.n_blocks = nrt;
     vst->cst.th.hashctx = HASHCTX_CHALLENGE2HASH;
 
@@ -266,6 +268,8 @@ MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst) {
         nrl = vst->cst.ps.nrl, nrs = nrt - nrl;
     const int n = vst->cst.pps.n, m = vst->cst.pps.m;
     int i, j;
+
+    th_init(&(vst->cst.th), &(vst->cst.ps));
 
     vst->cst.th.hashctx = HASHCTX_CHALLENGE1HASH;
 
