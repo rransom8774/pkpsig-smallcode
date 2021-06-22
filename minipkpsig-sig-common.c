@@ -135,7 +135,7 @@ sv th_hash_level(tht *th) {
     u32 node_index = th->next_node_index; u8 nibuf[4];
     size_t in_node_bytes = th->leaf_bytes, out_node_bytes = th->node_bytes;
     NS(chunkt) outchunk[1] = {NULL, th->node_bytes};
-    NS(chunkt) in[TH_MAX_DEGREE + 4] = {
+    NS(chunkt) in[TH_MAX_DEGREE + 5] = {
         {&(th->hashctx), 1},
         {th->prefix, th->prefix_bytes},
         {th->params, TH_PARAM_BYTES},
@@ -145,17 +145,17 @@ sv th_hash_level(tht *th) {
     const int degree = th->degree, n = th->n_blocks;
     int i, idx_in, idx_out;
 
-    FOR(i, TH_MAX_DEGREE+1) in[3+i].p = NULL;
+    FOR(i, TH_MAX_DEGREE+1) in[4+i].p = NULL;
 
     i = idx_in = idx_out = 0;
     while (idx_in < n) {
         FOR(i, degree) {
             if (idx_in >= n) {
-                in[3+i].p = NULL;
+                in[4+i].p = NULL;
                 break;
             }
-            in[3+i].p = th->leaves + idx_in*in_node_bytes;
-            in[3+i].bytes = in_node_bytes;
+            in[4+i].p = th->leaves + idx_in*in_node_bytes;
+            in[4+i].bytes = in_node_bytes;
             ++idx_in;
         }
 
