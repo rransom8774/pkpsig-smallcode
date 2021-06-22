@@ -210,6 +210,7 @@ sv NS(sst_gen_com1)(signstate *sst, int i) {
 
 msv NS(sst_zkp_pass1)(signstate *sst) {
     const int kf_base = sst->cst.pps.kf_base, bsgs_bytes = 4*kf_base;
+    const int ksl_cbytes = sst->cst.ksl.cbytes;
     const int ksl_pbytes = sst->cst.ksl.pbytes;
     const int ssl_cbytes = sst->cst.ssl.cbytes;
     const int ssl_pbytes = sst->cst.ssl.pbytes;
@@ -256,6 +257,8 @@ msv NS(sst_zkp_pass1)(signstate *sst) {
     sst->cst.th.hashctx = HASHCTX_CHALLENGE1HASH;
     sst->cst.th.leaf_bytes = ssl_cbytes;
     sst->cst.th.n_blocks = 2*nrt;
+    memcpy(sst->cst.th.prefix, sst->cst.salt_and_msghash, ksl_cbytes*2);
+    sst->cst.th.prefix_bytes = ksl_cbytes*2;
     FOR(i, nrt) {
         memcpy(sst->cst.th.leaves + ssl_cbytes*2*i, sst->coms[i][0],
             ssl_cbytes);
@@ -266,6 +269,7 @@ msv NS(sst_zkp_pass1)(signstate *sst) {
 }
 
 msv NS(sst_zkp_pass3)(signstate *sst) {
+    const int ksl_cbytes = sst->cst.ksl.cbytes;
     const int ssl_cbytes = sst->cst.ssl.cbytes;
     const int ssl_pbytes = sst->cst.ssl.pbytes;
     const int nrt = sst->cst.ps.nrtx + ssl_pbytes*8;
@@ -284,6 +288,8 @@ msv NS(sst_zkp_pass3)(signstate *sst) {
     sst->cst.th.hashctx = HASHCTX_CHALLENGE2HASH;
     sst->cst.th.leaf_bytes = 2*n;
     sst->cst.th.n_blocks = nrt;
+    memcpy(sst->cst.th.prefix, sst->cst.salt_and_msghash, ksl_cbytes*2);
+    sst->cst.th.prefix_bytes = ksl_cbytes*2;
     FOR(i, nrt) {
         u8 *zbuf = sst->cst.th.leaves + i*2*n;
         FOR(j, n) {

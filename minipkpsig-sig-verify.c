@@ -230,6 +230,7 @@ msv NS(svs_recover_commitments_short)(sigverifystate *vst) {
 }
 
 MAYBE_STATIC int NS(svs_verify_C2)(sigverifystate *vst) {
+    const int ksl_cbytes = vst->cst.ksl.cbytes;
     const int ssl_cbytes = vst->cst.ssl.cbytes;
     const int ssl_pbytes = vst->cst.ssl.pbytes;
     const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
@@ -239,6 +240,9 @@ MAYBE_STATIC int NS(svs_verify_C2)(sigverifystate *vst) {
     size_t zbytes = vst->cst.th.leaf_bytes = n*2;
 
     th_init(&(vst->cst.th), &(vst->cst.ps));
+
+    memcpy(vst->cst.th.prefix, vst->cst.salt_and_msghash, ksl_cbytes*2);
+    vst->cst.th.prefix_bytes = ksl_cbytes*2;
 
     vst->cst.th.n_blocks = nrt;
     vst->cst.th.hashctx = HASHCTX_CHALLENGE2HASH;
@@ -262,6 +266,7 @@ MAYBE_STATIC int NS(svs_verify_C2)(sigverifystate *vst) {
 }
 
 MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst) {
+    const int ksl_cbytes = vst->cst.ksl.cbytes;
     const int ssl_cbytes = vst->cst.ssl.cbytes;
     const int ssl_pbytes = vst->cst.ssl.pbytes;
     const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
@@ -270,6 +275,9 @@ MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst) {
     int i, j;
 
     th_init(&(vst->cst.th), &(vst->cst.ps));
+
+    memcpy(vst->cst.th.prefix, vst->cst.salt_and_msghash, ksl_cbytes*2);
+    vst->cst.th.prefix_bytes = ksl_cbytes*2;
 
     vst->cst.th.hashctx = HASHCTX_CHALLENGE1HASH;
 
