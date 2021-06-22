@@ -320,7 +320,7 @@ MAYBE_STATIC int NS(scs_derive_vector)(sigcommonstate *cst, u16 *v, int gen) {
     int i, rv = 0;
     FOR(i, n) v[i] = scs_mod_q(cst, cst->th.sortkeys[i]);
     if (gen) FOR(i, n) {
-        rv |= (cst->th.sortkeys[i] > cst->q_uniform_bound);
+        rv |= (cst->th.sortkeys[i] >= cst->q_uniform_bound);
     }
     return -rv;
 }
