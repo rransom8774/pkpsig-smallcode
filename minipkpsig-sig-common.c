@@ -309,6 +309,7 @@ msv NS(scs_hash_message)(sigcommonstate *cst, const u8 *msg, size_t len) {
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {cst->salt_and_msghash, ksl_cbytes},
+        {cst->pkbytes, scs_pksize(cst)},
         {(u8 *)msg, len},
         {NULL, 0}
     };
