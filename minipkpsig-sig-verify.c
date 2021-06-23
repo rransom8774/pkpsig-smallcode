@@ -144,6 +144,7 @@ msv NS(svs_recover_run_indexes)(sigverifystate *vst) {
 sv NS(unsquish_permutation)(u16 *sigma, int n) {
     int i, j;
     i = n;
+    sigma[n-1] = 0;
     while (i != 0) {
         int s_i;
         --i;
