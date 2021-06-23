@@ -20,13 +20,6 @@
 #include "minipkpsig-sig-sign.h"
 #include "minipkpsig-sig-keygen.h"
 
-#ifndef MINIPKPSIG_SINGLEFILE
-extern slt seclevels[];
-extern ppst pkp_paramsets[];
-extern symt symalgs[];
-extern pst paramsets[];
-#endif
-
 #include <string.h>
 
 MAYBE_STATIC int NS(scs_check_v)(sigcommonstate *cst) {

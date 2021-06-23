@@ -18,13 +18,6 @@
 #include "minipkpsig-sig-common.h"
 #include "minipkpsig-sig-thsort.h"
 
-#ifndef MINIPKPSIG_SINGLEFILE
-extern slt seclevels[];
-extern ppst pkp_paramsets[];
-extern symt symalgs[];
-extern pst paramsets[];
-#endif
-
 /* two partial versions of Batcher's odd-even merge sort */
 
 msv NS(memcswap_ct)(u8 *px, u8 *py, size_t len, int flag) {

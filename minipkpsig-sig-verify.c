@@ -12,6 +12,7 @@
 #include "minipkpsig-modvc.h"
 #include "minipkpsig-symtypes.h"
 #include "minipkpsig-pstypes.h"
+#include "minipkpsig-tables.h"
 #include "minipkpsig-paramsets-auto.h"
 #include "minipkpsig-seclevels-auto.h"
 #include "minipkpsig-treehash-auto.h"
@@ -20,13 +21,6 @@
 #include "minipkpsig-sig-verify.h"
 
 #include <string.h>
-
-#ifndef MINIPKPSIG_SINGLEFILE
-extern slt seclevels[];
-extern ppst pkp_paramsets[];
-extern symt symalgs[];
-extern pst paramsets[];
-#endif
 
 #ifdef MINIPKPSIG_SORT_DEBUG
 #include <assert.h>
