@@ -89,10 +89,12 @@ int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata) {
     int rv, i;
     u8 isym, pps;
     FOR(isym, N_SYMALGS) {
+        const symt *sym = &(symalgs[isym]);
+        if (sym->xof_chunked == NULL) continue;
+
         FOR(i, N_PARAMSETS) {
             const pst *ps_ptr = &(paramsets[i]);
             const ppst *pps = &(pkp_paramsets[ps.pps]);
-            const symt *sym = &(symalgs[isym]);
             const slt *ksl = &(seclevels[pps->ksl]),
                 *ssl = &(seclevels[ps.ssl]);
 
