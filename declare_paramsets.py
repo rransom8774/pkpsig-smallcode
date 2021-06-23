@@ -147,7 +147,7 @@ for pdline in pset_def_lines:
     leaves_C1 = nrt*2
     leaf_bytes_C1 = ssl_cbytes
     leaves_C2 = nrt
-    leaf_bytes_C2 = n*3
+    leaf_bytes_C2 = n*2
     th_max_total_leaf_bytes = max(th_max_total_leaf_bytes,
         leaves_C1 * leaf_bytes_C1, leaves_C2 * leaf_bytes_C2)
     th_max_sort_blocks = max(th_max_sort_blocks, nrt*2)
