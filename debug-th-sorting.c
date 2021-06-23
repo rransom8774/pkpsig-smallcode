@@ -45,6 +45,7 @@ static tht th;
 static tht *pth = &th;
 
 static const pst *ps = NULL;
+static int nrs = 0;
 
 static u8 hbuf[TH_MAX_SORT_BLOCKS*4];
 
@@ -184,7 +185,7 @@ static int compare_u32(const void *px, const void *py) {
 static void init_array(int ips, const char *seed) {
     size_t seedlen = strlen(seed);
     const slt *ssl;
-    int nrt, nrs, nrl;
+    int nrt, nrl;
     int i;
 
     ps = &(paramsets[ips]);
@@ -224,7 +225,7 @@ static void init_array(int ips, const char *seed) {
 int main(int argc, char *argv[]) {
     init_array(0, "foo");
     minipkpsig_th_set_sort_debug_cb(draw_sort_debug_cb);
-    th_sort_verifyC2(pth, ps);
+    th_sort_verifyC2(pth, nrs);
 
     return 0;
 }

@@ -166,7 +166,7 @@ static int test_th_sort_verifyC2_step(int ips) {
             if (i < nrs) th.sortkeys[i] = (i >= a);
             if (i < nrl) th.sortkeys[i+nrs] = (i >= b);
         }
-        th_sort_verifyC2(&th, ps);
+        th_sort_verifyC2(&th, nrs);
         for (i = 1; i < nrt; ++i) {
             if (th.sortkeys[i-1] > th.sortkeys[i]) {
                     printf("th_sort_verifyC2 failed, "

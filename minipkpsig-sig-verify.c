@@ -54,7 +54,7 @@ sv verifyC2_debug(tht *th, int nrs, int mergelen_l2, int chunkstart) {
 #define verifyC2_debug(th, nrs, mergelen_l2, chunkstart) /* no-op */
 #endif
 
-msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
+msv NS(th_sort_verifyC2)(tht *th, int nrs) {
     /* th->sortkeys is almost sorted, except that there are two sorted
      * subsequences, one at indices from 0 to nrs-1 and one at indices
      * from nrs to nrt-1.  We can optimize Batcher's odd-even merging
@@ -67,7 +67,7 @@ msv NS(th_sort_verifyC2)(tht *th, const pst *ps) {
      * merge layer needs to be sorted. */
 
     /* nrt (number of runs total) must have been computed by the caller. */
-    const int nrt = th->n_blocks, nrs = nrt - ps->nrl;
+    const int nrt = th->n_blocks;
 
     int mergelen_l2 = 1, mergelen = 1 << mergelen_l2;
     int mergemask = mergelen - 1, chunkstart = nrs & ~mergemask;
@@ -253,7 +253,7 @@ MAYBE_STATIC int NS(svs_verify_C2)(sigverifystate *vst) {
     th_prehash(&(vst->cst.th), ssl_cbytes);
 
     /* reorder z according to run_indexes */
-    th_sort_verifyC2(&(vst->cst.th), &(vst->cst.ps));
+    th_sort_verifyC2(&(vst->cst.th), nrs);
 
     /* hash */
     th_hash(&(vst->cst.th), vst->cst.hashbuf, ssl_cbytes);
@@ -285,7 +285,7 @@ MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst) {
         memcpy(vst->cst.th.leaves + ssl_cbytes*i,
                vst->coms_recovered[i], ssl_cbytes);
     }
-    th_sort_verifyC2(&(vst->cst.th), &(vst->cst.ps));
+    th_sort_verifyC2(&(vst->cst.th), nrs);
 
     /* shuffle in coms and sort pairwise */
     vst->cst.th.n_blocks = 2*nrt;

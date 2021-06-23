@@ -22,7 +22,7 @@ typedef struct {
 } sigverifystate;
 
 msv NS(th_sort_verifyC1)(tht *th);
-msv NS(th_sort_verifyC2)(tht *th, const pst *ps);
+msv NS(th_sort_verifyC2)(tht *th, int nrs);
 #define th_sort_verifyC1 NS(th_sort_verifyC1)
 #define th_sort_verifyC2 NS(th_sort_verifyC2)
 
