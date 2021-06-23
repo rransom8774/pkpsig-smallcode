@@ -2,14 +2,12 @@
 #include "minipkpsig-pstypes.h"
 #include "minipkpsig-seclevels-auto.h"
 #define PPS_q797n55m25kc1a 0
-#define PPS_q977n61m28kc1 1
-#define PPS_q977n61m28kc2 2
-#define PPS_q1409n87m42kc4 3
-#define PPS_q1789n111m55kc5 4
-#define PPS_q1789n111m55kc6 5
+#define PPS_q977n61m28kc2 1
+#define PPS_q1409n87m42kc4 2
+#define PPS_q1789n111m55kc5 3
+#define PPS_q1789n111m55kc6 4
 MAYBE_STATIC const ppst pkp_paramsets[] = {
     {797,55,25,16,SECLEVEL_c1a},
-    {977,61,28,16,SECLEVEL_c1},
     {977,61,28,16,SECLEVEL_c2},
     {1409,87,42,24,SECLEVEL_c4},
     {1789,111,55,32,SECLEVEL_c5},
@@ -23,7 +21,6 @@ MAYBE_STATIC const pst paramsets[] = {
     {PPS_q797n55m25kc1a,0,SECLEVEL_b112git,34,47},
     {PPS_q797n55m25kc1a,0,SECLEVEL_b96,28,41},
     {PPS_q797n55m25kc1a,0,SECLEVEL_b80,22,35},
-    {PPS_q977n61m28kc1,0,SECLEVEL_c1,35,55},
     {PPS_q977n61m28kc2,0,SECLEVEL_c2,50,84},
     {PPS_q977n61m28kc2,0,SECLEVEL_c1a,44,69},
     {PPS_q977n61m28kc2,0,SECLEVEL_c1,35,55},
