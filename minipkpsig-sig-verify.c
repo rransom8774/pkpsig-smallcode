@@ -219,7 +219,7 @@ msv NS(svs_recover_commitments_short)(sigverifystate *vst) {
     FOR(i, nrs) {
         u32 alpha = (vst->Hbuf_reordered[i] & 0x7FFF);
         scs_expand_blindingseed(&(vst->cst), r_sigma, pi_sigma_inv,
-                vst->coms_recovered[i], vst->blindingseeds + i*ssl_cbytes,
+                vst->coms_recovered[i], vst->blindingseeds + i*ksl_pbytes,
                 vst->run_indexes[i], 0);
         scs_apply_perm_inv(&(vst->cst), vst->z[i], vst->cst.v, pi_sigma_inv);
         FOR(j, n) {
