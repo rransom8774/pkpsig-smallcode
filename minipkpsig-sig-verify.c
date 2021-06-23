@@ -182,7 +182,7 @@ msv NS(svs_process_long_proofs)(sigverifystate *vst) {
     };
 
     FOR(i, nrl) {
-        u32 alpha = (vst->Hbuf_reordered[i] & 0x7FFF);
+        u32 alpha = (vst->Hbuf_reordered[i+nrs] & 0x7FFF);
         u32 neg_alpha = vst->cst.pps.q - alpha;
 
         vc_decode(vst->cst.vcz, vst->z[i+nrs], vst->longproofs + i*nS);
