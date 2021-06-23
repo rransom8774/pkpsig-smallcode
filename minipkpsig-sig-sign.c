@@ -199,7 +199,7 @@ sv NS(sst_gen_com1)(signstate *sst, int i) {
         {&hashctx, 1},
         {sst->cst.salt_and_msghash, ksl_cbytes*2},
         {indexbuf, 4},
-        {sst->sigma, n},
+        {sst->sigma[i], n},
         {sst->Ar_buf, m*2},
         {NULL, 0}
     };
