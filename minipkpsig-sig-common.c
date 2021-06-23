@@ -134,7 +134,7 @@ msv NS(th_init)(tht *th, const pst *ps) {
 sv th_hash_level(tht *th) {
     u32 node_index = th->next_node_index; u8 nibuf[4];
     size_t in_node_bytes = th->leaf_bytes, out_node_bytes = th->node_bytes;
-    NS(chunkt) outchunk[1] = {NULL, th->node_bytes};
+    NS(chunkt) outchunk[1] = {NULL, out_node_bytes};
     NS(chunkt) in[TH_MAX_DEGREE + 5] = {
         {&(th->hashctx), 1},
         {th->prefix, th->prefix_bytes},
