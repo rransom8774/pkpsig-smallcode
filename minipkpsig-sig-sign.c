@@ -295,6 +295,7 @@ msv NS(sst_zkp_pass3)(signstate *sst) {
         FOR(j, n) {
             u16le_put(zbuf + 2*j, sst->z[i][j]);
         }
+        sst->cst.th.sortkeys[i] = i;
     }
     th_prehash(&(sst->cst.th), ssl_cbytes);
     th_hash(&(sst->cst.th), sst->cst.h_C2, ssl_cbytes);

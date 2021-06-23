@@ -171,13 +171,33 @@ sv th_hash_level(tht *th) {
 }
 
 msv NS(th_prehash)(tht *th, size_t outbytes) {
-    int real_degree = th->degree;
+    size_t in_node_bytes = th->leaf_bytes, out_node_bytes = th->node_bytes;
+    u8 nibuf[4];
+    NS(chunkt) outchunk[1] = {NULL, out_node_bytes};
+    NS(chunkt) in[] = {
+        {&(th->hashctx), 1},
+        {th->prefix, th->prefix_bytes},
+        {th->params, TH_PARAM_BYTES},
+        {nibuf, 4},
+        {NULL, in_node_bytes},
+        {NULL, 0}
+    };
+    int i, n = th->n_blocks;
+
     assert(outbytes <= th->node_bytes);
     th->params[2] = outbytes;
 
-    th->degree = 1;
-    th_hash_level(th);
-    th->degree = real_degree;
+    assert(out_node_bytes <= in_node_bytes);
+
+    FOR(i, n) {
+        outchunk->p = th->leaves + out_node_bytes*i;
+        in[4].p = th->leaves + in_node_bytes*i;
+        u32le_put(nibuf, th->sortkeys[i]);
+        th->xof(outchunk, in);
+    }
+
+    th->leaf_bytes = out_node_bytes;
+    th->next_node_index = n;
 }
 
 msv NS(th_hash)(tht *th, u8 *out, size_t outbytes) {
