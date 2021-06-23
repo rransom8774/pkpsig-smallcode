@@ -18,7 +18,6 @@ typedef struct {
     u16 run_indexes[PKPSIG_MAX_N_RUNS_TOTAL];
     u16 Hbuf_reordered[PKPSIG_MAX_N_RUNS_TOTAL];
     u16 z[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_N];
-    u8 sigma[PKPSIG_MAX_N_RUNS_LONG][PKPSIG_MAX_N];
     u8 coms_recovered[PKPSIG_MAX_N_RUNS_TOTAL][PKPSIG_MAX_SIG_CRHASH_BYTES];
 } sigverifystate;
 
