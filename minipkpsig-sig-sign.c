@@ -378,3 +378,19 @@ int NS(simple_detached_sign)(const char *psname, u8 *sigout, const u8 *msg, size
     return 0;
 }
 
+int NS(simple_secretkey_to_publickey)(const char *psname, u8 *pk_out, const u8 *sk) {
+    signstate sst;
+    pst ps;
+    size_t pksize;
+    if (ps_lookup(ps, psname) < 0) return -1;
+    sst_init(&sst, &ps);
+
+    if (sst_set_secret_key(&sst, sk) < 0) return -1;
+
+    pksize = scs_pksize(&(sst.cst));
+    memcpy(pk_out, sst.cst.pkbytes, pksize);
+
+    sst_erase(&sst);
+    return 0;
+}
+

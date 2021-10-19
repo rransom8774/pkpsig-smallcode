@@ -35,6 +35,8 @@ int minipkpsig_simple_detached_verify(const char *psname, const u8 *sigin, const
 ssize_t minipkpsig_simple_get_secretkey_bytes(const char *psname);
 int minipkpsig_simple_detached_sign(const char *psname, u8 *sigout, const u8 *msg, size_t msglen, const u8 *sk);
 
+int minipkpsig_simple_secretkey_to_publickey(const char *psname, u8 *pk_out, const u8 *sk);
+
 int minipkpsig_simple_keypair(const char *psname, u8 *pk_out, u8 *sk_out);
 
 #endif

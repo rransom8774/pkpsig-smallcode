@@ -106,6 +106,17 @@ static int compute_test_vector(const char *psname, uint32_t i) {
     return -1;
   };
 
+  assert(sigbuf.len >= pubkeybuf.len);
+  rv = minipkpsig_simple_secretkey_to_publickey(psname, sigbuf.data, seckeybuf.data);
+  if (rv != 0) {
+    fprintf(stderr, "public key recovery reported failure (%i)\n", rv);
+    return -1;
+  };
+  if (memcmp(sigbuf.data, pubkeybuf.data, pubkeybuf.len) != 0) {
+    fprintf(stderr, "public key recovery returned incorrect result\n");
+    return -1;
+  };
+
   rv = minipkpsig_simple_detached_sign(psname, sigbuf.data, msgbuf.data, msgbuf.len, seckeybuf.data);
   if (rv != 0) {
     fprintf(stderr, "signature generation failed (%i)\n", rv);
