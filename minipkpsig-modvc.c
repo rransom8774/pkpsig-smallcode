@@ -11,6 +11,8 @@
 #include "minipkpsig-common.h"
 #include "minipkpsig-modvc.h"
 
+#include <stdlib.h>
+
 static u64 ceildiv(u64 x, u32 div) {
     u64 y = x + (u64)(div-1);
     return y / (u64)div;
@@ -77,6 +79,7 @@ sv vclayer_init_next(vct *vc, int layer) {
 
 msv NS(vc_init_)(vct *vc, const u16 M[], u16 Mlen) {
     int i;
+    if (Mlen > VEC_LENMAX) abort();
     vc->layers[0].nlower = Mlen;
     FOR(i, Mlen) mod_init(vc->layers[0].M[i], M[i]);
     FOR(i, VEC_MAXLAYERS-1) {
