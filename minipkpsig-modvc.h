@@ -14,7 +14,7 @@ typedef struct {
     u8 shift;
 } modt;
 
-#define VEC_LENMAX 111
+#define VEC_LENMAX 106
 #define VEC_LIMIT 16384
 typedef struct {
     u16 nlower;

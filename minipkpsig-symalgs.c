@@ -16,8 +16,8 @@ msv NS(shake256_xof_chunked)(NS(chunkt) *out, NS(chunkt) in[]);
 
 MAYBE_STATIC const symt NS(symalgs)[] = {
     {"shake256", SECLEVEL_c6, NS(shake256_xof_chunked)},
-    {"xoesch256", SECLEVEL_c2, NULL},
-    {"xoesch384", SECLEVEL_c4, NULL},
+    /*{"xoesch256", SECLEVEL_c2, NULL},*/
+    /*{"xoesch384", SECLEVEL_c4, NULL},*/
     {"", 0, NULL}
 };
 

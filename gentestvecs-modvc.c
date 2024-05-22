@@ -264,24 +264,29 @@ static int setup_testvecsets() {
 
   /* pkpsig z vector formats */
 
-  rv |= gen_tvs_const(797, 55);
+  rv |= gen_tvs_const(53, 106);
+  rv |= gen_tvs_const(53, 53);
+
+  /* rv |= gen_tvs_const(797, 55);
   rv |= gen_tvs_const(977, 61);
   rv |= gen_tvs_const(1409, 87);
-  rv |= gen_tvs_const(1789, 111);
+  rv |= gen_tvs_const(1789, 111); */
 
   /* pkpsig rho vector formats, unsquished */
 
-  rv |= gen_tvs_const(55, 55);
+  /* rv |= gen_tvs_const(55, 55);
   rv |= gen_tvs_const(61, 61);
   rv |= gen_tvs_const(87, 87);
-  rv |= gen_tvs_const(111, 111);
+  rv |= gen_tvs_const(111, 111); */
 
   /* pkpsig rho vector formats, squished */
 
-  rv |= gen_tvs_squished_perm(55);
+  rv |= gen_tvs_squished_perm(106);
+
+  /* rv |= gen_tvs_squished_perm(55);
   rv |= gen_tvs_squished_perm(61);
   rv |= gen_tvs_squished_perm(87);
-  rv |= gen_tvs_squished_perm(111);
+  rv |= gen_tvs_squished_perm(111); */
 
   /* miscellaneous random vector formats with no particular application in mind */
 

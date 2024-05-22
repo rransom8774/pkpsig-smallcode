@@ -53,7 +53,7 @@ MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name) {
     FOR(sym, N_SYMALGS) {
         const char *symname = symalgs[sym].name;
         snprintf(buf, sizeof(buf), "%s-s", symname);
-        if (strheadmatch(symname, name)) {
+        if (strheadmatch(buf, name)) {
             name += strlen(buf);
             break;
         }
@@ -62,16 +62,25 @@ MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name) {
     if (symalgs[sym].maxsl < pkp_paramsets[pps].ksl) return -1;
 
     FOR(ssl, N_SECLEVELS) {
-        if (strcmp(seclevels[ssl].name, name) == 0) break;
+        snprintf(buf, sizeof(buf), "%snrs", seclevels[ssl].name);
+        if (strheadmatch(buf, name)) {
+            name += strlen(buf);
+            break;
+        }
     }
     if (ssl == N_SECLEVELS) return -1;
 
     FOR(i, N_PARAMSETS) {
         const pst *pc = &(paramsets[i]);
+        size_t nrt = pc->nrtx + 8*seclevels[ssl].pbytes;
+        size_t nrl = pc->nrl, nrs = nrt - nrl;
         if (pc->pps == pps && pc->ssl == ssl) {
-            ps = *pc;
-            ps.sym = sym;
-            return 0;
+            snprintf(buf, sizeof(buf), "%dl%d", nrs, nrl);
+            if (strcmp(buf, name) == 0) {
+                ps = *pc;
+                ps.sym = sym;
+                return 0;
+            }
         }
     }
     return -1;
@@ -91,13 +100,14 @@ int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata) {
             const ppst *pps = &(pkp_paramsets[ps.pps]);
             const slt *ksl = &(seclevels[pps->ksl]),
                 *ssl = &(seclevels[ps.ssl]);
+            int nrt = ps.nrtx + ssl->pbytes*8, nrs = nrt - ps.nrl;
 
             if (sym->maxsl < pps->ksl) continue;
 
-            snprintf(buf, sizeof(buf), "q%dn%dm%dk%s-%s-s%s",
+            snprintf(buf, sizeof(buf), "q%dn%dm%dk%s-%s-s%snrs%dl%d",
                      pps->q, pps->n, pps->m, ksl->name,
                      sym->name,
-                     ssl->name);
+                     ssl->name, nrs, ps.nrl);
             rv = cb(cbdata, buf);
             if (rv != 0) return rv;
         }
@@ -270,7 +280,7 @@ MAYBE_STATIC size_t NS(scs_get_sig_bytes)(const sigcommonstate *cst) {
 }
 
 MAYBE_STATIC size_t NS(scs_pksize)(sigcommonstate *cst) {
-    return cst->pps.kf_base+1 + vc_nS(cst->vcpk);
+    return cst->pps.kf_base*2 + vc_nS(cst->vcpk);
 }
 #define scs_pksize NS(scs_pksize)
 
@@ -281,7 +291,7 @@ msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
     NS(chunkt) out[1] = {cst->hashbuf, n*4};
     NS(chunkt) in[] = {
         {&hashctx, 1},
-        {cst->pkbytes, cst->pps.kf_base+1},
+        {cst->pkbytes, cst->pps.kf_base*2},
         {ibuf, 4},
         {NULL, 0}
     };
@@ -290,11 +300,9 @@ msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
         memcpy(cst->pkbytes, pkbytes, scs_pksize(cst));
     }
 
-    vc_decode(cst->vcpk, cst->w, pkbytes + cst->pps.kf_base+1);
+    vc_decode(cst->vcpk, cst->w, pkbytes + cst->pps.kf_base*2);
 
-    u32le_put(ibuf, 0);
-    cst->xof(out, in);
-    FOR(j, n) cst->v[j] = scs_mod_q(cst, u32le_get(cst->hashbuf + 4*j));
+    FOR(j, n) cst->v[j] = scs_mod_q(cst, j);
 
     for (i = m; i < n; ++i) {
         u32le_put(ibuf, i);

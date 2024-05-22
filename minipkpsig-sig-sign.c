@@ -34,7 +34,7 @@ msv NS(sst_erase)(signstate *sst) {
 
 MAYBE_STATIC size_t NS(sst_sksize)(signstate *sst) {
     size_t kf_base = sst->cst.pps.kf_base;
-    return 1 + 5*kf_base + (kf_base+1)/2;
+    return 4*kf_base;
 }
 
 msv NS(sst_expand_secret_key)(signstate *sst) {
@@ -43,17 +43,24 @@ msv NS(sst_expand_secret_key)(signstate *sst) {
     int i;
     u8 hashctx = HASHCTX_SECKEYSEEDEXPAND;
     u8 indexbuf[4];
-    NS(chunkt) out[1] = {{sst->cst.hashbuf, n*4}};
+    NS(chunkt) out[1] = {{sst->cst.hashbuf, 0}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
-        {sst->cst.pkbytes, kf_base + 1},
         {sst->seckeyseed, 2*kf_base},
         {indexbuf, 4},
         {NULL, 0}
     };
 
+    /* recover public parameters seed and expand it */
+    u32le_put(indexbuf, HASHIDX_SECKEYSEEDEXPAND_PUBPARAMSSEED);
+    out[0].bytes = kf_base*2;
+    sst->cst.xof(out, in);
+    memcpy(sst->cst.pkbytes, sst->cst.hashbuf, kf_base*2);
+    scs_expand_pk(&(sst->cst), sst->cst.pkbytes);
+
     /* recover pi_inv and w */
     u32le_put(indexbuf, HASHIDX_SECKEYSEEDEXPAND_PI_INV);
+    out[0].bytes = n*4;
     sst->cst.xof(out, in);
     FOR(i, n) sst->cst.th.sortkeys[i] = u32le_get(out->p + 4*i);
     scs_derive_permutation(&(sst->cst), sst->pi_inv, 0);
@@ -64,67 +71,20 @@ msv NS(sst_expand_secret_key)(signstate *sst) {
 
     /* encode w into pkbytes */
     FOR(i, m) sst->cst.w[i] = sst->cst.multbuf[i];
-    vc_encode(sst->cst.vcpk, sst->cst.pkbytes + kf_base+1, sst->cst.w);
+    vc_encode(sst->cst.vcpk, sst->cst.pkbytes + kf_base*2, sst->cst.w);
     FOR(i, m) sst->cst.w[i] = sst->cst.multbuf[i];
 }
 
-msv NS(sst_checksum_seckey)(signstate *sst) {
+msv NS(sst_set_secret_key)(signstate *sst, const u8 *sk) {
     const int kf_base = sst->cst.pps.kf_base,
-        cksum_bytes = (kf_base + 1)/2;
-    int i;
-    u8 hashctx = HASHCTX_SECKEYCHECKSUM;
-    u8 cksum_params[2] = {
-        sst->cst.ksl.pbytes,
-        sst->cst.ksl.cbytes
-    };
-    NS(chunkt) out[1] = {{sst->cst.hashbuf, cksum_bytes}};
-    NS(chunkt) in[] = {
-        {&hashctx, 1},
-        {cksum_params, 2},
-        {sst->cst.pkbytes, scs_pksize(&(sst->cst))},
-        {NULL, 0}
-    };
-
-    sst->cst.xof(out, in);
-}
-
-MAYBE_STATIC int NS(sst_set_secret_key)(signstate *sst, const u8 *sk) {
-    const int kf_base = sst->cst.pps.kf_base,
-        cksum_bytes = (kf_base + 1)/2,
         n = sst->cst.pps.n, m = sst->cst.pps.m;
-    int i, rv;
-    u8 hashctx = HASHCTX_SECKEYSEEDEXPAND;
-    u8 indexbuf[4];
-    NS(chunkt) out[1] = {{sst->cst.hashbuf, n*4}};
-    NS(chunkt) in[] = {
-        {&hashctx, 1},
-        {sst->cst.pkbytes, kf_base + 1},
-        {sst->seckeyseed, 2*kf_base},
-        {indexbuf, 4},
-        {NULL, 0}
-    };
+    int i;
 
-    memcpy(sst->cst.pkbytes, sk, kf_base + 1);
-    memcpy(sst->seckeyseed, sk + kf_base+1, kf_base*2);
-    memcpy(sst->saltgenseed, sk + 3*kf_base+1, kf_base*2);
-    memcpy(sst->seckeychecksum, sk + 5*kf_base+1, cksum_bytes);
+    memcpy(sst->seckeyseed, sk, kf_base*2);
+    memcpy(sst->saltgenseed, sk + 2*kf_base, kf_base*2);
 
-    /* expand A and v */
-    scs_expand_pk(&(sst->cst), sst->cst.pkbytes);
-
-    /* recover pi_inv, w, and the rest of pkbytes */
+    /* recover pkbytes, A, v, pi_inv, and w */
     sst_expand_secret_key(sst);
-
-    /* recompute checksum; check it unless generating a new key */
-    sst_checksum_seckey(sst);
-    rv = memverify_ct(sst->seckeychecksum, sst->cst.hashbuf, cksum_bytes);
-
-    /* clobber secret key if checksum does not match */
-    if (rv != 0) {
-        sst_erase(sst);
-    }
-
-    return rv;
 }
 
 msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len) {
@@ -172,7 +132,6 @@ sv NS(sst_gen_blinding_seed_gen_seed)(signstate *sst) {
     NS(chunkt) out[1] = {{sst->bsgs, bsgs_bytes}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
-        {sst->cst.pkbytes, kf_base + 1},
         {sst->seckeyseed, 2*kf_base},
         {sst->cst.salt_and_msghash, 2*ksl_cbytes},
         {NULL, 0}
@@ -371,7 +330,7 @@ int NS(simple_detached_sign)(const char *psname, u8 *sigout, const u8 *msg, size
     if (ps_lookup(ps, psname) < 0) return -1;
     sst_init(&sst, &ps);
 
-    if (sst_set_secret_key(&sst, sk) < 0) return -1;
+    sst_set_secret_key(&sst, sk);
     sst_sign(&sst, sigout, msg, msglen);
 
     sst_erase(&sst);
@@ -385,7 +344,7 @@ int NS(simple_secretkey_to_publickey)(const char *psname, u8 *pk_out, const u8 *
     if (ps_lookup(ps, psname) < 0) return -1;
     sst_init(&sst, &ps);
 
-    if (sst_set_secret_key(&sst, sk) < 0) return -1;
+    sst_set_secret_key(&sst, sk);
 
     pksize = scs_pksize(&(sst.cst));
     memcpy(pk_out, sst.cst.pkbytes, pksize);

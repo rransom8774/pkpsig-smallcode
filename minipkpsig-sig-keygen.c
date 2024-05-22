@@ -22,18 +22,6 @@
 
 #include <string.h>
 
-MAYBE_STATIC int NS(scs_check_v)(sigcommonstate *cst) {
-    const int n = cst->pps.n;
-    int i;
-
-    cst->th.n_blocks = n;
-    FOR(i, n) cst->th.sortkeys[i] = cst->v[i];
-    th_sort_keys_full(&(cst->th));
-
-    FOR(i, n-1) if (cst->th.sortkeys[i] == cst->th.sortkeys[i+1]) return -1;
-    return 0;
-}
-
 MAYBE_STATIC int NS(sst_keypair)(signstate *sst) {
     const int kf_base = sst->cst.pps.kf_base;
     int rv, seed_rv;
@@ -43,26 +31,14 @@ MAYBE_STATIC int NS(sst_keypair)(signstate *sst) {
     rv = NS(randombytes)(sst->saltgenseed, kf_base*2);
     if (rv != 0) return rv;
 
-    do {
-        rv = NS(randombytes)(sst->cst.pkbytes, kf_base+1);
-        if (rv != 0) return rv;
-
-        scs_expand_pk(&(sst->cst), sst->cst.pkbytes);
-        seed_rv = scs_check_v(&(sst->cst));
-    } while (seed_rv != 0);
-
     sst_expand_secret_key(sst);
-    sst_checksum_seckey(sst);
-    memcpy(sst->seckeychecksum, sst->cst.hashbuf, (kf_base+1)/2);
     return 0;
 }
 
 msv NS(sst_get_skblob)(signstate *sst, u8 *skbytes) {
     const int kf_base = sst->cst.pps.kf_base;
-    memcpy(skbytes, sst->cst.pkbytes, kf_base+1); skbytes += kf_base+1;
     memcpy(skbytes, sst->seckeyseed, 2*kf_base); skbytes += 2*kf_base;
     memcpy(skbytes, sst->saltgenseed, 2*kf_base); skbytes += 2*kf_base;
-    memcpy(skbytes, sst->seckeychecksum, (kf_base+1)/2);
 }
 
 int NS(simple_keypair)(const char *psname, u8 *pk_out, u8 *sk_out) {
