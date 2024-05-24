@@ -42,14 +42,17 @@ msv NS(sst_expand_secret_key)(signstate *sst) {
         n = sst->cst.pps.n, m = sst->cst.pps.m;
     int i;
     u8 hashctx = HASHCTX_SECKEYSEEDEXPAND;
-    u8 indexbuf[4];
+    u8 indexbuf[4], qbuf[2];
     NS(chunkt) out[1] = {{sst->cst.hashbuf, 0}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {sst->seckeyseed, 2*kf_base},
+        {qbuf, 2},
         {indexbuf, 4},
         {NULL, 0}
     };
+
+    u16le_put(qbuf, sst->cst.pps.q);
 
     /* recover public parameters seed and expand it */
     u32le_put(indexbuf, HASHIDX_SECKEYSEEDEXPAND_PUBPARAMSSEED);
@@ -128,15 +131,17 @@ msv NS(sst_apply_compose_perm_inv)(signstate *sst, u16 *v_sigma, u8 *pi_sigma, c
 sv NS(sst_gen_blinding_seed_gen_seed)(signstate *sst) {
     const int kf_base = sst->cst.pps.kf_base, bsgs_bytes = 4*kf_base;
     const int ksl_cbytes = sst->cst.ksl.cbytes;
-    u8 hashctx = HASHCTX_INTERNAL_GENBLINDINGSEEDGENSEED;
+    u8 hashctx = HASHCTX_INTERNAL_GENBLINDINGSEEDGENSEED, qbuf[2];
     NS(chunkt) out[1] = {{sst->bsgs, bsgs_bytes}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {sst->seckeyseed, 2*kf_base},
+        {qbuf, 2},
         {sst->cst.salt_and_msghash, 2*ksl_cbytes},
         {NULL, 0}
     };
 
+    u16le_put(qbuf, sst->cst.pps.q);
     sst->cst.xof(out, in);
 }
 
@@ -171,16 +176,18 @@ msv NS(sst_zkp_pass1)(signstate *sst) {
     const int m = sst->cst.pps.m;
     int i, j, rv;
     u8 hashctx = HASHCTX_INTERNAL_GENBLINDINGSEED;
-    u8 indexbuf[4];
+    u8 indexbuf[4], qbuf[2];
     NS(chunkt) out[1] = {{sst->bsg_buf, bsgs_bytes + ksl_pbytes}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {sst->bsg_buf, bsgs_bytes},
+        {qbuf, 2},
         {indexbuf, 4},
         {NULL, 0}
     };
 
     NS(sst_gen_blinding_seed_gen_seed)(sst);
+    u16le_put(qbuf, sst->cst.pps.q);
 
     FOR(i, nrt) {
         memcpy(sst->bsg_buf, sst->bsgs, bsgs_bytes);

@@ -286,12 +286,13 @@ MAYBE_STATIC size_t NS(scs_pksize)(sigcommonstate *cst) {
 
 msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
     const int n = cst->pps.n, m = cst->pps.m;
-    u32 i, j; u8 ibuf[4];
+    u32 i, j; u8 ibuf[4], qbuf[2];
     u8 hashctx = HASHCTX_PUBPARAMS;
     NS(chunkt) out[1] = {cst->hashbuf, n*4};
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {cst->pkbytes, cst->pps.kf_base*2},
+        {qbuf, 2},
         {ibuf, 4},
         {NULL, 0}
     };
@@ -299,6 +300,8 @@ msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
     if (cst->pkbytes != pkbytes) {
         memcpy(cst->pkbytes, pkbytes, scs_pksize(cst));
     }
+
+    u16le_put(qbuf, cst->pps.q);
 
     vc_decode(cst->vcpk, cst->w, pkbytes + cst->pps.kf_base*2);
 
