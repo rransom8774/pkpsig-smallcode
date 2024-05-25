@@ -62,7 +62,7 @@ MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name) {
     if (symalgs[sym].maxsl < pkp_paramsets[pps].ksl) return -1;
 
     FOR(ssl, N_SECLEVELS) {
-        snprintf(buf, sizeof(buf), "%snrs", seclevels[ssl].name);
+        snprintf(buf, sizeof(buf), "%srs", seclevels[ssl].name);
         if (strheadmatch(buf, name)) {
             name += strlen(buf);
             break;
@@ -75,7 +75,7 @@ MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name) {
         size_t nrt = pc->nrtx + 8*seclevels[ssl].pbytes;
         size_t nrl = pc->nrl, nrs = nrt - nrl;
         if (pc->pps == pps && pc->ssl == ssl) {
-            snprintf(buf, sizeof(buf), "%dl%d", nrs, nrl);
+            snprintf(buf, sizeof(buf), "%drL%d", nrs, nrl);
             if (strcmp(buf, name) == 0) {
                 ps = *pc;
                 ps.sym = sym;
@@ -104,7 +104,7 @@ int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata) {
 
             if (sym->maxsl < pps->ksl) continue;
 
-            snprintf(buf, sizeof(buf), "q%dn%dm%dk%s-%s-s%snrs%dl%d",
+            snprintf(buf, sizeof(buf), "q%dn%dm%dk%s-%s-s%srs%drL%d",
                      pps->q, pps->n, pps->m, ksl->name,
                      sym->name,
                      ssl->name, nrs, ps.nrl);
