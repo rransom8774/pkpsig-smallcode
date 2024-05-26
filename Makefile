@@ -40,22 +40,22 @@ minipkpsig-sym-shake256-xkcp.o: minipkpsig-sym-shake256-xkcp.c minipkpsig-symtyp
 minipkpsig-symalgs.o: minipkpsig-symalgs.c minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-common.h minipkpsig.h
 	cc -g -c -o $@ $<
 
-minipkpsig-sig-common.o: minipkpsig-sig-common.c minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-tables.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h minipkpsig.h
+minipkpsig-sig-common.o: minipkpsig-sig-common.c minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-tables.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-modvc.h minipkpsig-common.h minipkpsig.h
 	cc -g -c -o $@ $<
 
-minipkpsig-sig-thsort.o: minipkpsig-sig-thsort.c minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h minipkpsig.h
+minipkpsig-sig-thsort.o: minipkpsig-sig-thsort.c minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-modvc.h minipkpsig-common.h minipkpsig.h
 	cc -g -c -o $@ $<
 
-minipkpsig-sig-verify.o: minipkpsig-sig-verify.c minipkpsig-sig-verify.h minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-tables.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h minipkpsig.h
+minipkpsig-sig-verify.o: minipkpsig-sig-verify.c minipkpsig-sig-verify.h minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-tables.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-modvc.h minipkpsig-common.h minipkpsig.h
 	cc -g -c -o $@ $<
 
-minipkpsig-sig-verify-debug.o: minipkpsig-sig-verify.c minipkpsig-sig-verify.h minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-tables.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h minipkpsig.h
+minipkpsig-sig-verify-debug.o: minipkpsig-sig-verify.c minipkpsig-sig-verify.h minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-tables.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-modvc.h minipkpsig-common.h minipkpsig.h
 	cc -g -c -DMINIPKPSIG_SORT_DEBUG -o $@ $<
 
-minipkpsig-sig-sign.o: minipkpsig-sig-sign.c minipkpsig-sig-sign.h minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-tables.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h minipkpsig.h
+minipkpsig-sig-sign.o: minipkpsig-sig-sign.c minipkpsig-sig-sign.h minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-tables.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-modvc.h minipkpsig-common.h minipkpsig.h
 	cc -g -c -o $@ $<
 
-minipkpsig-sig-keygen.o: minipkpsig-sig-keygen.c minipkpsig-sig-keygen.h minipkpsig-sig-sign.h minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-common.h minipkpsig.h
+minipkpsig-sig-keygen.o: minipkpsig-sig-keygen.c minipkpsig-sig-keygen.h minipkpsig-sig-sign.h minipkpsig-sig-thsort.h minipkpsig-sig-common.h minipkpsig-treehash-auto.h minipkpsig-paramsets-auto.h minipkpsig-seclevels-auto.h minipkpsig-symtypes.h minipkpsig-pstypes.h minipkpsig-modvc.h minipkpsig-common.h minipkpsig.h
 	cc -g -c -o $@ $<
 
 
