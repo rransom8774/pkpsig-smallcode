@@ -4,6 +4,7 @@ import itertools
 c_psets = """\
 DEFINE_PARAMSET(B256,53,106,53,c5,c5,shake256,231,138)
 DEFINE_PARAMSET(B256,53,106,53,c5,c4,shake256,238,135)
+DEFINE_PARAMSET(B256,59,118,59,c5,c5,shake256,230,136)
 """
 
 keyfmt_bases = { "B256": 32 }
