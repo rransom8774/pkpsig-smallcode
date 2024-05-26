@@ -378,15 +378,18 @@ MAYBE_STATIC int NS(scs_expand_blindingseed)(sigcommonstate *cst, u16 *r_sigma, 
     const int n = cst->pps.n;
     int i, rv = 0;
     u8 hashctx = HASHCTX_EXPANDBLINDINGSEED;
-    u8 runidxbuf[4];
+    u8 runidxbuf[4], qbuf[2];
     NS(chunkt) out[1] = {{NULL, 0}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {cst->salt_and_msghash, ksl_cbytes*2},
+        {qbuf, 2},
         {runidxbuf, 4},
         {(u8 *)bseed, ksl_pbytes},
         {NULL, 0}
     };
+
+    u16le_put(qbuf, cst->pps.q);
 
     u32le_put(runidxbuf, HASHIDX_EXPANDBLINDINGSEED_RUN_INDEX_FACTOR*runidx +
               HASHIDX_EXPANDBLINDINGSEED_COMMITMENT);
