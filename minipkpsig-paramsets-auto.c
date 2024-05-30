@@ -12,5 +12,6 @@ MAYBE_STATIC const pst NS(paramsets)[] = {
     {PPS_q53n106m53kc5,0,SECLEVEL_c5,113,138},
     {PPS_q53n106m53kc5,0,SECLEVEL_c4,117,135},
     {PPS_q59n118m59kc5,0,SECLEVEL_c5,110,136},
+    {PPS_q59n118m59kc5,0,SECLEVEL_c4,119,130},
     {0,0,0,0,0}
 };
