@@ -72,8 +72,8 @@ MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name) {
 
     FOR(i, N_PARAMSETS) {
         const pst *pc = &(paramsets[i]);
-        size_t nrt = pc->nrtx + 8*seclevels[ssl].pbytes;
-        size_t nrl = pc->nrl, nrs = nrt - nrl;
+        int nrt = pc->nrtx + 8*seclevels[ssl].pbytes;
+        int nrl = pc->nrl, nrs = nrt - nrl;
         if (pc->pps == pps && pc->ssl == ssl) {
             snprintf(buf, sizeof(buf), "%drL%d", nrs, nrl);
             if (strcmp(buf, name) == 0) {
