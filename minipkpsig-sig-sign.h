@@ -13,7 +13,6 @@ typedef struct {
 
     u8 seckeyseed[PKPSIG_MAX_KF_BASE*2];
     u8 saltgenseed[PKPSIG_MAX_KF_BASE*2];
-    u8 seckeychecksum[(PKPSIG_MAX_KF_BASE+1)/2];
 
     u8 pi_inv[PKPSIG_MAX_N];
     u16 v_pi[PKPSIG_MAX_N];
@@ -38,7 +37,6 @@ msv NS(sst_init)(signstate *sst, const pst *ps);
 msv NS(sst_erase)(signstate *sst);
 MAYBE_STATIC size_t NS(sst_sksize)(signstate *sst);
 msv NS(sst_expand_secret_key)(signstate *sst);
-msv NS(sst_checksum_seckey)(signstate *sst);
 msv NS(sst_set_secret_key)(signstate *sst, const u8 *sk);
 msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len);
 msv NS(sst_apply_compose_perm_inv)(signstate *sst, u16 *v_sigma, u8 *pi_sigma, const u16 *v, const u8 *pi, const u8 *sigma_inv);
@@ -50,7 +48,6 @@ msv NS(sst_sign)(signstate *vst, u8 *sig, const u8 *msg, size_t msglen);
 #define sst_erase NS(sst_erase)
 #define sst_sksize NS(sst_sksize)
 #define sst_expand_secret_key NS(sst_expand_secret_key)
-#define sst_checksum_seckey NS(sst_checksum_seckey)
 #define sst_set_secret_key NS(sst_set_secret_key)
 #define sst_hash_message NS(sst_hash_message)
 #define sst_apply_compose_perm_inv NS(sst_apply_compose_perm_inv)
