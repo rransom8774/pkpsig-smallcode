@@ -1,7 +1,7 @@
 
 .PHONY: test-bin clean
 
-CFLAGS = -g
+CFLAGS = -g -Wall
 
 test-bin: generate-test-vectors gentestvecs-modvc test-th-sorting
 

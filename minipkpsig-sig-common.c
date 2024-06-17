@@ -90,7 +90,7 @@ MAYBE_STATIC int NS(ps_lookup_)(pst *ps_ptr, const char *name) {
 int NS(ps_enum_names)(NS(enum_names_cb) cb, void *cbdata) {
     char buf[64];
     int rv, i;
-    u8 isym, pps;
+    u8 isym;
     FOR(isym, N_SYMALGS) {
         const symt *sym = &(symalgs[isym]);
         if (sym->xof_chunked == NULL) continue;
@@ -140,7 +140,7 @@ msv NS(th_init)(tht *th, const pst *ps) {
 sv th_hash_level(tht *th) {
     u32 node_index = th->next_node_index; u8 nibuf[4];
     size_t in_node_bytes = th->leaf_bytes, out_node_bytes = th->node_bytes;
-    NS(chunkt) outchunk[1] = {NULL, out_node_bytes};
+    NS(chunkt) outchunk[1] = {{NULL, out_node_bytes}};
     NS(chunkt) in[TH_MAX_DEGREE + 5] = {
         {&(th->hashctx), 1},
         {th->prefix, th->prefix_bytes},
@@ -179,7 +179,7 @@ sv th_hash_level(tht *th) {
 msv NS(th_prehash)(tht *th, size_t outbytes) {
     size_t in_node_bytes = th->leaf_bytes, out_node_bytes = th->node_bytes;
     u8 nibuf[4];
-    NS(chunkt) outchunk[1] = {NULL, out_node_bytes};
+    NS(chunkt) outchunk[1] = {{NULL, out_node_bytes}};
     NS(chunkt) in[] = {
         {&(th->hashctx), 1},
         {th->prefix, th->prefix_bytes},
@@ -241,7 +241,7 @@ msv NS(scs_init)(sigcommonstate *cst, const pst *ps) {
     u16 M[PKPSIG_MAX_N];
     int i, n;
 
-    memset(cst, 0, sizeof(cst));
+    memset(cst, 0, sizeof(*cst));
 
     cst->ps = *ps;
     cst->pps = pkp_paramsets[ps->pps];
@@ -288,7 +288,7 @@ msv NS(scs_expand_pk)(sigcommonstate *cst, const u8 *pkbytes) {
     const int n = cst->pps.n, m = cst->pps.m;
     u32 i, j; u8 ibuf[4], qbuf[2];
     u8 hashctx = HASHCTX_PUBPARAMS;
-    NS(chunkt) out[1] = {cst->hashbuf, n*4};
+    NS(chunkt) out[1] = {{cst->hashbuf, n*4}};
     NS(chunkt) in[] = {
         {&hashctx, 1},
         {cst->pkbytes, cst->pps.kf_base*2},

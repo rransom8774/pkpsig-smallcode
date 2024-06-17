@@ -79,9 +79,7 @@ msv NS(sst_expand_secret_key)(signstate *sst) {
 }
 
 msv NS(sst_set_secret_key)(signstate *sst, const u8 *sk) {
-    const int kf_base = sst->cst.pps.kf_base,
-        n = sst->cst.pps.n, m = sst->cst.pps.m;
-    int i;
+    const int kf_base = sst->cst.pps.kf_base;
 
     memcpy(sst->seckeyseed, sk, kf_base*2);
     memcpy(sst->saltgenseed, sk + 2*kf_base, kf_base*2);
@@ -103,7 +101,7 @@ msv NS(sst_hash_message)(signstate *sst, const u8 *msg, size_t len) {
     };
 
     if (msg == NULL) {
-        in[1].p = (u8 *) ""; msg = "";
+        in[1].p = (u8 *) ""; msg = (u8 *) "";
         in[1].bytes = len = 0;
     }
 

@@ -24,7 +24,7 @@
 
 MAYBE_STATIC int NS(sst_keypair)(signstate *sst) {
     const int kf_base = sst->cst.pps.kf_base;
-    int rv, seed_rv;
+    int rv;
 
     rv = NS(randombytes)(sst->seckeyseed, kf_base*2);
     if (rv != 0) return rv;

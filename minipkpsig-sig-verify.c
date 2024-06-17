@@ -113,11 +113,8 @@ msv NS(svs_set_signature)(sigverifystate *vst, const u8 *sig) {
 }
 
 msv NS(svs_recover_run_indexes)(sigverifystate *vst) {
-    const int ksl_pbytes = vst->cst.ksl.pbytes;
-    const int ssl_cbytes = vst->cst.ssl.cbytes;
     const int ssl_pbytes = vst->cst.ssl.pbytes;
-    const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
-        nrl = vst->cst.ps.nrl, nrs = nrt - nrl;
+    const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8;
     int i;
 
     FOR(i, nrt) {
@@ -153,7 +150,6 @@ msv NS(svs_process_long_proofs)(sigverifystate *vst) {
     size_t nS_z = vc_nS(vst->cst.vcz), nS_sigma = vc_nS(vst->cst.vcsigma),
         nS = nS_z + nS_sigma;
     const int ksl_cbytes = vst->cst.ksl.cbytes;
-    const int ksl_pbytes = vst->cst.ksl.pbytes;
     const int ssl_cbytes = vst->cst.ssl.cbytes;
     const int ssl_pbytes = vst->cst.ssl.pbytes;
     const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
@@ -200,9 +196,7 @@ msv NS(svs_process_long_proofs)(sigverifystate *vst) {
 }
 
 msv NS(svs_recover_commitments_short)(sigverifystate *vst) {
-    const int ksl_cbytes = vst->cst.ksl.cbytes;
     const int ksl_pbytes = vst->cst.ksl.pbytes;
-    const int ssl_cbytes = vst->cst.ssl.cbytes;
     const int ssl_pbytes = vst->cst.ssl.pbytes;
     const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
         nrl = vst->cst.ps.nrl, nrs = nrt - nrl;
@@ -267,7 +261,6 @@ MAYBE_STATIC int NS(svs_verify_C1)(sigverifystate *vst) {
     const int ssl_pbytes = vst->cst.ssl.pbytes;
     const int nrt = vst->cst.ps.nrtx + ssl_pbytes*8,
         nrl = vst->cst.ps.nrl, nrs = nrt - nrl;
-    const int n = vst->cst.pps.n, m = vst->cst.pps.m;
     int i, j;
 
     th_init(&(vst->cst.th), &(vst->cst.ps));

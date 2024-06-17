@@ -76,6 +76,7 @@ static int init_test_buffers(const char *psname, uint32_t count) {
     fprintf(stderr, "data buffer allocation failed\n");
     return -1;
   };
+  return 0;
 };
 
 static int compute_test_vector(const char *psname, uint32_t i) {
@@ -128,6 +129,7 @@ static int compute_test_vector(const char *psname, uint32_t i) {
     fprintf(stderr, "signature verification failed (%i)\n", rv);
     return -1;
   };
+  return 0;
 };
 
 static void write_ui32(FILE *f, uint32_t i) {
@@ -164,7 +166,7 @@ static int generate_test_vector_file(const char *psname, uint32_t i) {
   if (rv < 0) return rv;
 
   while (1) {
-    fname_len = snprintf(fnamebuf.data, fnamebuf.capacity,
+    fname_len = snprintf((char *)(fnamebuf.data), fnamebuf.capacity,
                          "out/testvecs/%s/testvec-%s-%lu.bin",
                          "pkpsig", psname, (unsigned long)i);
     if (fname_len + 1 <= fnamebuf.capacity) {
@@ -179,7 +181,7 @@ static int generate_test_vector_file(const char *psname, uint32_t i) {
     };
   };
 
-  f = fopen(fnamebuf.data, "wb");
+  f = fopen((const char *)(fnamebuf.data), "wb");
   if (f == NULL) {
     fprintf(stderr, "error opening output file %s\n", fnamebuf.data);
     return -1;
